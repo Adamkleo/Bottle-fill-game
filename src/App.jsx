@@ -1,17 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import Bottle from './components/Bottle';
-import Timer from './components/Timer';
-import { shuffleArray, getNRandomColors, getRandomElements } from './ts/utils';
+import { getNRandomColors, getRandomElements, allEqual } from './ts/utils';
 import { Solver } from './solver/solver';
-import { BOTTLE_LENGTH, BOTTLE_LIMIT, EMPTY_BOTTLES, NUM_BOTTLES, COLORS2 } from './ts/constants';
+import { BOTTLE_LENGTH, EMPTY_BOTTLES, NUM_BOTTLES, COLORS2 } from './ts/constants';
 
 function App() {
 
 	const numColorsNeeded = NUM_BOTTLES - EMPTY_BOTTLES;
-
-
 	const colors = getNRandomColors(COLORS2, numColorsNeeded);
+
+    const [selectedBottle, setSelectedBottle] = useState(null);
+    const [bottles, setBottles] = useState(generateInitialState());
+    const [states, setStates] = useState([bottles]);
+    const [buttonsDisabled, setButtonsDisabled] = useState(false);
+
+	let solver = new Solver();
+
+	useEffect(() => {
+		if (winningState(bottles)) {
+			handleWin();
+		}
+	}, [bottles]);
+
 
 	function generateInitialState() {
 		let bottles = [];
@@ -33,12 +44,23 @@ function App() {
 		return bottles;
 	}
 
-	const [selectedBottle, setSelectedBottle] = useState(null);
-	const [bottles, setBottles] = useState(generateInitialState());
-	const [states, setStates] = useState([bottles]);
-	const [buttonsDisabled, setButtonsDisabled] = useState(false);
 
-	let solver = new Solver();
+	function winningState(bottles) {
+		// Separate bottles into empty and full based on their contents
+		let emptyBottles = bottles.filter(bottle => bottle.colors.length === 0);
+		let fullBottles = bottles.filter(bottle => bottle.colors.length === BOTTLE_LENGTH && allEqual(bottle.colors));
+
+		// Check that the number of empty bottles matches the expected EMPTY_BOTTLES
+		// and that all remaining bottles are full and uniform in color
+		return emptyBottles.length === EMPTY_BOTTLES && fullBottles.length === (NUM_BOTTLES - EMPTY_BOTTLES);
+	}
+
+
+	function handleWin() {
+		alert('Congratulations! You won the game.');
+		setButtonsDisabled(false);
+	}
+
 
 	function undo() {
 		if (states.length > 1) {
@@ -52,12 +74,14 @@ function App() {
 		const newBottles = generateRandomState();
 		setBottles(newBottles);
 		setStates([newBottles]);
+		setSelectedBottle(null);
+		setButtonsDisabled(false);
 	}
 
+
+
 	function animateStates(states) {
-		if (!states) {
-			return;
-		}
+		if (!states) return;
 		let i = 0;
 		let interval = setInterval(() => {
 			if (i < states.length) {
@@ -68,6 +92,7 @@ function App() {
 				setButtonsDisabled(false);
 			}
 		}, 100);
+
 	}
 
 	function handleClick(id) {
@@ -147,16 +172,15 @@ function App() {
 	return (
 		<>
 			<h1>Bottle</h1>
-			<Timer />
 			<button onClick={undo} disabled={buttonsDisabled}>
 				Undo
 			</button>
-			<button onClick={() => { resetGame() }} disabled={buttonsDisabled}>
-				New
+			<button onClick={resetGame} disabled={buttonsDisabled}>
+				New Game
 			</button>
 			<button onClick={() => {
 				setButtonsDisabled(true); // Disable buttons when solving starts
-				let solve = solver.solve(bottles, 'bfs', true, BOTTLE_LENGTH);
+				let solve = solver.solve(bottles, 'bfs', true);
 				if (solve) {
 					animateStates(solve);
 				}
@@ -164,7 +188,7 @@ function App() {
 					alert("No solution found");
 					setButtonsDisabled(false);
 				}
-				animateStates();
+
 			}} disabled={buttonsDisabled}>
 				Solve
 			</button>

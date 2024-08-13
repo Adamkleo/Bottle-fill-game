@@ -10,7 +10,7 @@ interface BottleState {
 
 export class Solver {
 
-    public solve(state: BottleState[], mode: string, reconstruct: boolean = false, bottleLength: number): BottleState[] | BottleState[][] | null {
+    public solve(state: BottleState[], mode: string, reconstruct: boolean = false): BottleState[] | BottleState[][] | null {
         const [initialState, colorDict] = this.convertToGameState(state);
         
         let result: GameState | GameState[] | null = null;
@@ -25,7 +25,7 @@ export class Solver {
                 return result.map(gameState => this.convertToBottleState(gameState, colorDict, BOTTLE_LENGTH));
             } else {
                 // If reconstruct is false, return just the final state as a BottleState[]
-                return this.convertToBottleState(result, colorDict, bottleLength);
+                return this.convertToBottleState(result, colorDict, BOTTLE_LENGTH);
             }
         }
 
@@ -97,8 +97,6 @@ export class Solver {
             parent: StateWithParent | null;
         }
 
-        console.log(initialState);
-
         const queue = new Queue<StateWithParent>();
         const visitedStates = new Set<string>();
         queue.enqueue({ state: initialState, parent: null });
@@ -124,7 +122,6 @@ export class Solver {
         }
 
         if (!goalNode) {
-            console.log("No solution found!");
             return null;
         }
         if (!reconstruct) {
