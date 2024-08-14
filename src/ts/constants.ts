@@ -1,7 +1,11 @@
-export const NUM_BOTTLES = 12;
-export const BOTTLE_LIMIT = 18;
-export const BOTTLE_LENGTH = 4;
+export const NUM_BOTTLES = 10;
 export const EMPTY_BOTTLES = 2;
+export const NON_EMPTY_BOTTLES = NUM_BOTTLES - EMPTY_BOTTLES;
+
+export const BOTTLE_LIMIT = 18;
+
+export const BOTTLE_LENGTH = 4;
+export const MAX_BOTTLE_LENGTH = 8;
 
 export const COLORS1 = [
     "#FF5733", // Vivid Red-Orange

@@ -12,7 +12,7 @@ export class Solver {
 
     public solve(state: BottleState[], mode: string, reconstruct: boolean = false): BottleState[] | BottleState[][] | null {
         const [initialState, colorDict] = this.convertToGameState(state);
-        
+
         let result: GameState | GameState[] | null = null;
         if (mode === "bfs") {
             result = this.solveWithBFS(initialState, reconstruct);
@@ -139,4 +139,5 @@ export class Solver {
         // If the queue is exhausted and no goal state is found
 
     }
+
 }

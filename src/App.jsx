@@ -1,26 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import Bottle from './components/Bottle';
+import Toolbar from './components/Toolbar';
 import { getNRandomColors, getRandomElements, allEqual } from './ts/utils';
 import { Solver } from './solver/solver';
-import { BOTTLE_LENGTH, EMPTY_BOTTLES, NUM_BOTTLES, COLORS2 } from './ts/constants';
+import { BOTTLE_LENGTH, EMPTY_BOTTLES, NUM_BOTTLES, COLORS2, MAX_BOTTLE_LENGTH, NON_EMPTY_BOTTLES } from './ts/constants';
+
 
 function App() {
 
-	const numColorsNeeded = NUM_BOTTLES - EMPTY_BOTTLES;
+	const numColorsNeeded = NON_EMPTY_BOTTLES;
 	const colors = getNRandomColors(COLORS2, numColorsNeeded);
 
-    const [selectedBottle, setSelectedBottle] = useState(null);
-    const [bottles, setBottles] = useState(generateInitialState());
-    const [states, setStates] = useState([bottles]);
-    const [buttonsDisabled, setButtonsDisabled] = useState(false);
+	const [isToggled, setIsToggled] = useState(false);
+	const [selectedBottle, setSelectedBottle] = useState(null);
+	const [bottles, setBottles] = useState(generateInitialState());
+	const [states, setStates] = useState([bottles]);
+	const [buttonsDisabled, setButtonsDisabled] = useState(false);
 
 	let solver = new Solver();
 
 	useEffect(() => {
-		if (winningState(bottles)) {
-			handleWin();
-		}
+		checkIfWin(bottles)
 	}, [bottles]);
 
 
@@ -35,7 +36,7 @@ function App() {
 	function generateRandomState() {
 		let bottles = [];
 		for (let i = 0; i < NUM_BOTTLES; i++) {
-			if (i < NUM_BOTTLES - 2) {
+			if (i < NON_EMPTY_BOTTLES) {
 				bottles.push({ id: i, colors: getRandomElements(colors, BOTTLE_LENGTH), freeSpace: 0 });
 			} else {
 				bottles.push({ id: i, colors: [], freeSpace: BOTTLE_LENGTH });
@@ -45,39 +46,42 @@ function App() {
 	}
 
 
-	function winningState(bottles) {
+	function checkIfWin(bottles) {
 		// Separate bottles into empty and full based on their contents
 		let emptyBottles = bottles.filter(bottle => bottle.colors.length === 0);
 		let fullBottles = bottles.filter(bottle => bottle.colors.length === BOTTLE_LENGTH && allEqual(bottle.colors));
 
 		// Check that the number of empty bottles matches the expected EMPTY_BOTTLES
 		// and that all remaining bottles are full and uniform in color
-		return emptyBottles.length === EMPTY_BOTTLES && fullBottles.length === (NUM_BOTTLES - EMPTY_BOTTLES);
-	}
-
-
-	function handleWin() {
-		alert('Congratulations! You won the game.');
-		setButtonsDisabled(false);
-	}
-
-
-	function undo() {
-		if (states.length > 1) {
-			setBottles(states[states.length - 2]);
-			setStates(states.slice(0, states.length - 1));
+		if (emptyBottles.length === EMPTY_BOTTLES && fullBottles.length === NON_EMPTY_BOTTLES) {
+			setBottles(bottles);
+			winAnimation();
+			setButtonsDisabled(false);
 		}
-		setSelectedBottle(null);
 	}
 
-	function resetGame() {
-		const newBottles = generateRandomState();
-		setBottles(newBottles);
-		setStates([newBottles]);
-		setSelectedBottle(null);
-		setButtonsDisabled(false);
+	function winAnimation() {
+		let bottlesClone = bottles;
+		// for every non empty bottle, pop the top element, repeat in a timer for bottle_length times
+		let i = 0;
+		let interval = setInterval(() => {
+			if (i < BOTTLE_LENGTH) {
+				bottlesClone = bottlesClone.map(bottle => {
+					if (bottle.colors.length > 0) {
+						const newColors = [...bottle.colors];
+						newColors.pop();
+						return { ...bottle, colors: newColors, freeSpace: bottle.freeSpace + 1 };
+					}
+					return bottle;
+				});
+				setBottles(bottlesClone);
+				i++;
+			} else {
+				clearInterval(interval);
+			}
+		}, 300);
+		setStates([]);
 	}
-
 
 
 	function animateStates(states) {
@@ -92,8 +96,8 @@ function App() {
 				setButtonsDisabled(false);
 			}
 		}, 100);
-
 	}
+
 
 	function handleClick(id) {
 		const selected = selectedBottle;
@@ -168,33 +172,79 @@ function App() {
 
 	}
 
+	function undo() {
+		if (states.length > 1) {
+			setBottles(states[states.length - 2]);
+			setStates(states.slice(0, states.length - 1));
+		}
+		setSelectedBottle(null);
+	}
+
+	function resetGame() {
+		const newBottles = generateRandomState();
+		setBottles(newBottles);
+		setStates([newBottles]);
+		setSelectedBottle(null);
+		setButtonsDisabled(false);
+	}
+
+	function solveGame() {
+		setButtonsDisabled(true); // Disable buttons when solving starts
+		let solve = solver.solve(bottles, 'bfs', true);
+		if (solve) {
+			animateStates(solve);
+		}
+		else {
+			alert("No solution found");
+			setButtonsDisabled(false);
+		}
+	}
+
+	const gameButtons = [
+		{ label: 'Undo', onClick: undo, disabled: buttonsDisabled, className: 'red' },
+		{ label: 'New Game', onClick: resetGame, disabled: buttonsDisabled, className: 'green' },
+	];
+
+	const solverButtons = [
+		{ label: 'Solve', onClick: solveGame, disabled: buttonsDisabled, className: 'blue' },
+	];
+
+
+	const handleToggle = () => {
+		setIsToggled(!isToggled);
+	};
+
+
+
 
 	return (
 		<>
-			<h1>Bottle</h1>
-			<button onClick={undo} disabled={buttonsDisabled}>
-				Undo
-			</button>
-			<button onClick={resetGame} disabled={buttonsDisabled}>
-				New Game
-			</button>
-			<button onClick={() => {
-				setButtonsDisabled(true); // Disable buttons when solving starts
-				let solve = solver.solve(bottles, 'bfs', true);
-				if (solve) {
-					animateStates(solve);
-				}
-				else {
-					alert("No solution found");
-					setButtonsDisabled(false);
-				}
+			<h1>Bottle Game</h1>
 
-			}} disabled={buttonsDisabled}>
-				Solve
-			</button>
+			<div className="toggle-switch">
+				<input
+					type="checkbox"
+					id="toggle"
+					className="toggle-input"
+					checked={isToggled}
+					onChange={handleToggle}
+					disabled={buttonsDisabled}
+				/>
+				<label htmlFor="toggle" className="toggle-label">
+					<span className="toggle-ball"></span>
+				</label>
+			</div>
 
 
-			<div>
+
+			{/* Conditionally render Toolbar based on toggle state */}
+			{isToggled ? (
+				<Toolbar buttons={solverButtons} />
+			) : (
+				<Toolbar buttons={gameButtons} />
+			)}
+
+			<div className='bottles'>
 				{bottles.map(bottle => (
 					<Bottle
 						key={bottle.id}
@@ -203,6 +253,7 @@ function App() {
 						freeSpace={bottle.freeSpace}
 						onClick={() => handleClick(bottle.id)}
 						selected={selectedBottle === bottle.id}
+						size={Math.min(BOTTLE_LENGTH, MAX_BOTTLE_LENGTH)}
 					/>
 				))}
 			</div>
