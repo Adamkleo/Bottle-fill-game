@@ -2,16 +2,21 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import Bottle from './components/Bottle';
 import Toolbar from './components/Toolbar';
+import SettingMenu from './components/SettingMenu';
+import ToggleSwitch from './components/ToggleSwitch';
 import { getNRandomColors, getRandomElements, allEqual } from './ts/utils';
 import { Solver } from './solver/solver';
-import { BOTTLE_LENGTH, EMPTY_BOTTLES, NUM_BOTTLES, COLORS2, MAX_BOTTLE_LENGTH, NON_EMPTY_BOTTLES } from './ts/constants';
+import { settings, NON_EMPTY_BOTTLES, COLORS2 } from './ts/constants';
 
 
 function App() {
 
-	const numColorsNeeded = NON_EMPTY_BOTTLES;
+	
+
+	const numColorsNeeded = NON_EMPTY_BOTTLES();
 	const colors = getNRandomColors(COLORS2, numColorsNeeded);
 
+	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [isToggled, setIsToggled] = useState(false);
 	const [selectedBottle, setSelectedBottle] = useState(null);
 	const [bottles, setBottles] = useState(generateInitialState());
@@ -27,7 +32,7 @@ function App() {
 
 	function generateInitialState() {
 		let bottles = [];
-		for (let i = 0; i < NUM_BOTTLES; i++) {
+		for (let i = 0; i < settings.numBottles; i++) {
 			bottles.push({ id: i, colors: [], freeSpace: numColorsNeeded });
 		}
 		return bottles
@@ -35,11 +40,11 @@ function App() {
 
 	function generateRandomState() {
 		let bottles = [];
-		for (let i = 0; i < NUM_BOTTLES; i++) {
-			if (i < NON_EMPTY_BOTTLES) {
-				bottles.push({ id: i, colors: getRandomElements(colors, BOTTLE_LENGTH), freeSpace: 0 });
+		for (let i = 0; i < settings.numBottles; i++) {
+			if (i < NON_EMPTY_BOTTLES()) {
+				bottles.push({ id: i, colors: getRandomElements(colors, settings.bottleLength), freeSpace: 0 });
 			} else {
-				bottles.push({ id: i, colors: [], freeSpace: BOTTLE_LENGTH });
+				bottles.push({ id: i, colors: [], freeSpace: settings.bottleLength });
 			}
 		}
 		return bottles;
@@ -49,11 +54,11 @@ function App() {
 	function checkIfWin(bottles) {
 		// Separate bottles into empty and full based on their contents
 		let emptyBottles = bottles.filter(bottle => bottle.colors.length === 0);
-		let fullBottles = bottles.filter(bottle => bottle.colors.length === BOTTLE_LENGTH && allEqual(bottle.colors));
+		let fullBottles = bottles.filter(bottle => bottle.colors.length === settings.bottleLength && allEqual(bottle.colors));
 
 		// Check that the number of empty bottles matches the expected EMPTY_BOTTLES
 		// and that all remaining bottles are full and uniform in color
-		if (emptyBottles.length === EMPTY_BOTTLES && fullBottles.length === NON_EMPTY_BOTTLES) {
+		if (emptyBottles.length === settings.emptyBottles && fullBottles.length === NON_EMPTY_BOTTLES()) {
 			setBottles(bottles);
 			winAnimation();
 			setButtonsDisabled(false);
@@ -65,7 +70,7 @@ function App() {
 		// for every non empty bottle, pop the top element, repeat in a timer for bottle_length times
 		let i = 0;
 		let interval = setInterval(() => {
-			if (i < BOTTLE_LENGTH) {
+			if (i < settings.bottleLength) {
 				bottlesClone = bottlesClone.map(bottle => {
 					if (bottle.colors.length > 0) {
 						const newColors = [...bottle.colors];
@@ -100,6 +105,7 @@ function App() {
 
 
 	function handleClick(id) {
+
 		const selected = selectedBottle;
 		const targetBottle = bottles[id];
 
@@ -163,10 +169,13 @@ function App() {
 
 			setBottles(newBottles);
 			setStates([...states, newBottles]);
+
+
 			setSelectedBottle(null);
+
+
 			return;
 		}
-
 		// Otherwise, select the new bottle
 		setSelectedBottle(null);
 
@@ -179,6 +188,8 @@ function App() {
 		}
 		setSelectedBottle(null);
 	}
+
+
 
 	function resetGame() {
 		const newBottles = generateRandomState();
@@ -200,6 +211,12 @@ function App() {
 		}
 	}
 
+	const toggleMenu = () => {
+		setIsMenuOpen(!isMenuOpen);
+		setButtonsDisabled(!buttonsDisabled);
+	};
+
+
 	const gameButtons = [
 		{ label: 'Undo', onClick: undo, disabled: buttonsDisabled, className: 'red' },
 		{ label: 'New Game', onClick: resetGame, disabled: buttonsDisabled, className: 'green' },
@@ -209,40 +226,47 @@ function App() {
 		{ label: 'Solve', onClick: solveGame, disabled: buttonsDisabled, className: 'blue' },
 	];
 
-
 	const handleToggle = () => {
 		setIsToggled(!isToggled);
 	};
 
 
+	const handleSettingsChange = (name, value) => {
+		settings[name] = value;
+	};
 
+	const handleCloseMenu = () => {
+		setIsMenuOpen(false);
+		setButtonsDisabled(false);
+		const newInitialState = generateInitialState();
+		setBottles(newInitialState)
+		setStates([newInitialState])
+	}
 
 	return (
 		<>
-			<h1>Bottle Game</h1>
 
-			<div className="toggle-switch">
-				<input
-					type="checkbox"
-					id="toggle"
-					className="toggle-input"
-					checked={isToggled}
-					onChange={handleToggle}
-					disabled={buttonsDisabled}
-				/>
-				<label htmlFor="toggle" className="toggle-label">
-					<span className="toggle-ball"></span>
-				</label>
-			</div>
+			<ToggleSwitch isToggled={isToggled} onToggle={handleToggle} disabled={buttonsDisabled} />
 
-
+			<img src="src/assets/settings-w.png" alt="settings" className="settings-logo" onClick={toggleMenu} disabled={buttonsDisabled} />
 
 			{/* Conditionally render Toolbar based on toggle state */}
 			{isToggled ? (
-				<Toolbar buttons={solverButtons} />
+				<Toolbar buttons={solverButtons} buttonSize='large' />
 			) : (
-				<Toolbar buttons={gameButtons} />
+				<Toolbar buttons={gameButtons} buttonSize='large' />
 			)}
+
+
+
+			<SettingMenu
+				isOpen={isMenuOpen}
+				onClose={handleCloseMenu}
+				settings={settings}
+				onSettingsChange={handleSettingsChange}
+				handleSpeedrun={() => { }}
+				handleAnimation={() => { }}
+			/>
 
 			<div className='bottles'>
 				{bottles.map(bottle => (
@@ -253,10 +277,14 @@ function App() {
 						freeSpace={bottle.freeSpace}
 						onClick={() => handleClick(bottle.id)}
 						selected={selectedBottle === bottle.id}
-						size={Math.min(BOTTLE_LENGTH, MAX_BOTTLE_LENGTH)}
+						size={Math.min(settings.bottleLength, settings.maxBottleLength)}
 					/>
 				))}
 			</div>
+				<button onClick={() => {
+					console.log(settings.selectedPaletteIndex)
+				}}
+				></button>
 		</>
 	);
 }

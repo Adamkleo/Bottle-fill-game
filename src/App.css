@@ -12,62 +12,24 @@
 }
 
 
-/* Container for the toggle switch */
-.toggle-switch {
-  position: relative;
-  width: 60px;
-  height: 30px;
-  margin: 0 auto; /* Center horizontally */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Hidden checkbox input */
-.toggle-input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-/* The slider background */
-.toggle-label {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #FDFD96;
-  border-radius: 30px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-/* The circle inside the slider */
-.toggle-ball {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 24px;
-  height: 24px;
-  background-color: rgb(154, 154, 154);
-  border-radius: 50%;
-  transition: transform 0.3s ease;
-}
-
-/* Toggle on state */
-.toggle-input:checked + .toggle-label {
-  background-color: #66bb6a;
-}
-
-.toggle-input:checked + .toggle-label .toggle-ball {
-  transform: translateX(30px);
-}
-
 
 .bottles {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
   justify-content: center;
+}
+
+.settings-logo {
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  position: absolute; /* Allows you to position it relative to the nearest positioned ancestor */
+  top: 20px; /* Distance from the top of the container */
+  left: 20px; /* Distance from the left of the container */
+  transition: transform 0.3s;
+}
+
+.settings-logo:hover {
+  transform: rotate(90deg);
 }

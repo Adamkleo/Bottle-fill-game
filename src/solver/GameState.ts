@@ -1,4 +1,4 @@
-import { BOTTLE_LENGTH, EMPTY_BOTTLES } from "../ts/constants";
+import { settings } from "../ts/constants";
 import { allEqual } from "../ts/utils";
 
 
@@ -23,9 +23,9 @@ export class GameState {
 
     public isGoalState(): boolean {
         // Filter to find bottles that are full (i.e., have the length of bottleLength)
-        const fullBottles: number[][] = this.bottles.filter(bottle => bottle.length === BOTTLE_LENGTH);
+        const fullBottles: number[][] = this.bottles.filter(bottle => bottle.length === settings.bottleLength);
         // Check if the number of full bottles is correct: full = total - empty
-        const fullBottlesSatisfied: boolean = fullBottles.length === (this.config.numBottles - EMPTY_BOTTLES);
+        const fullBottlesSatisfied: boolean = fullBottles.length === (this.config.numBottles - settings.emptyBottles);
         // Check if each bottle contains only a single color (number) repeated bottleLength times
         const bottleContentsSatisfied: boolean = fullBottles.every(bottle => allEqual(bottle));
 
@@ -44,7 +44,7 @@ export class GameState {
         }
 
         // Check if the 'to' bottle is full
-        if (this.bottles[toBottleIndex].length === BOTTLE_LENGTH) {
+        if (this.bottles[toBottleIndex].length === settings.bottleLength) {
             return false;
         }
 
@@ -79,7 +79,7 @@ export class GameState {
         }
 
         // Calculate how many colors can be moved to the 'to' bottle
-        const availableSpace = BOTTLE_LENGTH - bottles[toBottleIndex].length;
+        const availableSpace = settings.bottleLength - bottles[toBottleIndex].length;
         const colorsToMove = Math.min(count, availableSpace);
 
         // Move the colors to the 'to' bottle

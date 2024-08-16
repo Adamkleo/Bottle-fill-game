@@ -1,0 +1,50 @@
+.settings-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease-in-out;
+  z-index: 1000;
+}
+
+.settings-menu-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.settings-menu {
+  background: #7C7C7C;  /* Solid gray background */
+  border-bottom: 6px inset rgba(0, 0, 0, 0.5);
+  border-left: 6px inset rgba(0, 0, 0, 0.5);
+  border-right: 6px inset rgba(255, 255, 255, 0.5);
+  border-top: 6px inset rgba(255, 255, 255, 0.5);
+  box-sizing: border-box;
+  color: white;
+  width: 340px;
+  max-width: 80%;
+  padding: 20px;
+  position: relative;
+}
+
+.settings-menu::before {
+  content: '';
+  position: absolute;
+  top: -15px;
+  left: -15px;
+  right: -15px;
+  bottom: -15px;
+  z-index: -1;
+  border-radius: 12px;
+  /* background: linear-gradient(10deg, rgba(0, 183, 244, 0.828), rgb(85, 26, 205));  */ 
+  filter: blur(15px);
+  opacity: 1;
+}
+
+

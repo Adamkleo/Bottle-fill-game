@@ -1,6 +1,6 @@
 import { Queue } from '../ts/queue';
 import { GameState, GameConfig } from './GameState';
-import { BOTTLE_LENGTH } from '../ts/constants';
+import { settings } from '../ts/constants';
 
 interface BottleState {
     id: number;
@@ -22,10 +22,10 @@ export class Solver {
 
             if (Array.isArray(result)) {
                 // If reconstruct is true, return the entire path as an array of BottleState[]
-                return result.map(gameState => this.convertToBottleState(gameState, colorDict, BOTTLE_LENGTH));
+                return result.map(gameState => this.convertToBottleState(gameState, colorDict, settings.bottleLength));
             } else {
                 // If reconstruct is false, return just the final state as a BottleState[]
-                return this.convertToBottleState(result, colorDict, BOTTLE_LENGTH);
+                return this.convertToBottleState(result, colorDict, settings.bottleLength);
             }
         }
 

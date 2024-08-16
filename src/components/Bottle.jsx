@@ -55,6 +55,7 @@ const Bottle = ({ startY, colors, onClick, selected, size }) => {
 
             {/* Render the color segments */}
             {colors && colors.map((color, index) => generateColorSegment(startY, index))}
+            
             {/* Render the first bottle shadow */}
             <path
                 d={`
@@ -94,7 +95,7 @@ const Bottle = ({ startY, colors, onClick, selected, size }) => {
                     L ${startX + 50},${startY - 20}
                 `}
                 fill="gray"
-                fillOpacity="30%"
+                fillOpacity="15%"
                 stroke="white"
                 strokeWidth="3"
             />
@@ -108,72 +109,3 @@ const Bottle = ({ startY, colors, onClick, selected, size }) => {
 
 export default Bottle;
 
-
-
-
-/*
-
-{colors && colors.length >= 4 && (
-    <path
-        d={
-M ${startX},${startY}
-C ${startX + 10},${startY - 10}, ${startX + 40},${startY + 10}, ${startX + 50},${startY}
-L ${startX + 50},${startY + 50}
-L ${startX},${startY + 50}
-M ${startX + 50},${startY + 50}
-C ${startX + 40},${startY + 60}, ${startX + 10},${startY + 60}, ${startX},${startY + 50}
-
-        }
-        fill={colors[3]}
-        strokeWidth="0"
-    />
-)}
-
-{colors && colors.length >= 3 && (
-    <path
-        d={
-  M ${startX},${startY + 50}
-C ${startX + 10},${startY + 40}, ${startX + 40},${startY + 60}, ${startX + 50},${startY + 50}
-L ${startX + 50},${startY + 100}
-L ${startX},${startY + 100}
-M ${startX + 50},${startY + 100}
-C ${startX + 40},${startY + 110}, ${startX + 10},${startY + 110}, ${startX},${startY + 100}
-        }
-        fill={colors[2]}
-        strokeWidth="0"
-    />
-)}
-
-
-{colors && colors.length >= 2 && (
-    <path
-        d={
-M ${startX},${startY + 100}
-C ${startX + 10},${startY + 90}, ${startX + 40},${startY + 110}, ${startX + 50},${startY + 100}
-L ${startX + 50},${startY + 150}
-L ${startX},${startY + 150}
-M ${startX + 50},${startY + 150}
-C ${startX + 40},${startY + 160}, ${startX + 10},${startY + 160}, ${startX},${startY + 150}
-
-        }
-        fill={colors[1]}
-        strokeWidth="0"
-    />
-)}
-
-{colors && colors.length >= 1 && (
-    <path
-        d={
-            M ${startX},${startY + 150}
-            C ${startX},${startY + 210} ${startX + 50},${startY + 210} ${startX + 50},${startY + 150}
-            L ${startX + 50},${startY + 155}
-            L ${startX},${startY + 155}
-            M ${startX + 50},${startY + 155}
-            C ${startX + 50},${startY + 145} ${startX},${startY + 135} ${startX},${startY + 155}
-        }
-        fill={colors[0]}
-        strokeWidth="0"
-    />
-)}
-
-*/
