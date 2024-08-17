@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './SettingMenu.css';
-import { settings, MAX_EMPTY_BOTTLES, MAX_BOTTLES, MIN_BOTTLES, MIN_BOTTLE_LENGTH, MAX_BOTTLE_LENGTH } from '../ts/constants';
+import { settings, MAX_EMPTY_BOTTLES, MAX_BOTTLES, MIN_BOTTLES, MIN_BOTTLE_LENGTH, MAX_BOTTLE_LENGTH, COLOR_PALETTES_LENGTH, MIN_EMOTY_BOTTLES } from '../ts/constants';
 import SettingItem from './SettingItem';
 import Toolbar from './Toolbar';
 
@@ -58,13 +58,13 @@ function SettingMenu(props: SettingsMenuProps) {
     const { numBottles, emptyBottles, bottleLength } = tempSettings;
     const maxEmptyBottles = Math.min(MAX_EMPTY_BOTTLES(), numBottles - 1);
     const validEmptyBottles = Math.min(emptyBottles, maxEmptyBottles);
-
+ 
     return {
       numBottles,
       emptyBottles: validEmptyBottles,
       bottleLength,
-      maxBottleLength: tempSettings.maxBottleLength,  // Ensure this property is retained
-      minEmptyBottles: settings.minEmptyBottles,       // Ensure this property is retained
+      maxBottleLength: tempSettings.maxBottleLength,         // Ensure this property is retained
+      selectedPalette: tempSettings.selectedPalette
     };
   };
 
@@ -74,6 +74,7 @@ function SettingMenu(props: SettingsMenuProps) {
     settings.numBottles = validatedSettings.numBottles;
     settings.emptyBottles = validatedSettings.emptyBottles;
     settings.bottleLength = validatedSettings.bottleLength;
+    settings.selectedPalette = validatedSettings.selectedPalette;
     props.onClose();
   };
 
@@ -137,8 +138,18 @@ function SettingMenu(props: SettingsMenuProps) {
             name="emptyBottles"
             value={tempSettings.emptyBottles}
             onChange={handleInputChange}
-            min={settings.minEmptyBottles}
+            min={MIN_EMOTY_BOTTLES}
             max={Math.min(MAX_EMPTY_BOTTLES(), tempSettings.numBottles - 2)}
+          />
+          <SettingItem
+            type="number"
+            label="Color Palette"
+            id="selectedPalette"
+            name="selectedPalette"
+            value={tempSettings.selectedPalette}
+            onChange={handleInputChange}
+            min={1}
+            max={COLOR_PALETTES_LENGTH}
           />
           <Toolbar buttons={settingButtons} buttonSize='small'/>
           <Toolbar buttons={menuButtons} buttonSize='medium'/>

@@ -5,21 +5,21 @@ export const settings = {
   emptyBottles: 2,
   bottleLength: 4,
   maxBottleLength: 8,
-  minEmptyBottles: 2
-  
+  selectedPalette: 1
 };
 
+export const MIN_EMOTY_BOTTLES = 2;
 export const MAX_BOTTLES = 14;
 export const MIN_BOTTLE_LENGTH = 2;
 export const MAX_BOTTLE_LENGTH = 7;
 
-export const MIN_BOTTLES = () => settings.minEmptyBottles + 2
+export const MIN_BOTTLES = () => MIN_EMOTY_BOTTLES + 2
 export const MAX_EMPTY_BOTTLES = () => settings.numBottles - 2
 export const NON_EMPTY_BOTTLES = () => settings.numBottles - settings.emptyBottles;
 
 
 
-export const COLORS1 = [
+const COLORS1 = [
   "#FF5733", // Vivid Red-Orange
   "#C70039", // Deep Red
   "#900C3F", // Dark Purple
@@ -34,7 +34,7 @@ export const COLORS1 = [
   "#566573" // Steely Gray
 ];
 
-export const COLORS2 = [
+const COLORS2 = [
   "#FF0000", // Pure Red
   "#00FF00", // Pure Green
   "#0000FF", // Pure Blue
@@ -49,7 +49,7 @@ export const COLORS2 = [
   "#A52A2A"  // Brown
 ];
 
-export const COLORS3 = [
+const COLORS3 = [
   '#2d00f7',
   '#ff69eb',
   '#b100e8',
@@ -64,7 +64,7 @@ export const COLORS3 = [
   '#9cf945'
 ];
 
-export const COLORS4 = [
+const COLORS4 = [
   "#FF6347", // Tomato
   "#4682B4", // Steel Blue
   "#32CD32", // Lime Green
@@ -80,4 +80,11 @@ export const COLORS4 = [
 ];
 
 
+export const COLOR_PALETTES = {
+  1: COLORS1,
+  2: COLORS2,
+  3: COLORS3,
+  4: COLORS4
+}
 
+export const COLOR_PALETTES_LENGTH = Object.keys(COLOR_PALETTES).length;

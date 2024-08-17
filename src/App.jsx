@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './App.css';
 import Bottle from './components/Bottle';
 import Toolbar from './components/Toolbar';
@@ -6,15 +6,13 @@ import SettingMenu from './components/SettingMenu';
 import ToggleSwitch from './components/ToggleSwitch';
 import { getNRandomColors, getRandomElements, allEqual } from './ts/utils';
 import { Solver } from './solver/solver';
-import { settings, NON_EMPTY_BOTTLES, COLORS2 } from './ts/constants';
+import { settings, NON_EMPTY_BOTTLES, COLOR_PALETTES } from './ts/constants';
 
 
 function App() {
 
-	
+	const numColorsNeeded = NON_EMPTY_BOTTLES();	
 
-	const numColorsNeeded = NON_EMPTY_BOTTLES();
-	const colors = getNRandomColors(COLORS2, numColorsNeeded);
 
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [isToggled, setIsToggled] = useState(false);
@@ -24,6 +22,8 @@ function App() {
 	const [buttonsDisabled, setButtonsDisabled] = useState(false);
 
 	let solver = new Solver();
+
+
 
 	useEffect(() => {
 		checkIfWin(bottles)
@@ -38,11 +38,11 @@ function App() {
 		return bottles
 	}
 
-	function generateRandomState() {
+	function generateRandomState(palette) {
 		let bottles = [];
 		for (let i = 0; i < settings.numBottles; i++) {
 			if (i < NON_EMPTY_BOTTLES()) {
-				bottles.push({ id: i, colors: getRandomElements(colors, settings.bottleLength), freeSpace: 0 });
+				bottles.push({ id: i, colors: getRandomElements(palette, settings.bottleLength), freeSpace: 0 });
 			} else {
 				bottles.push({ id: i, colors: [], freeSpace: settings.bottleLength });
 			}
@@ -192,7 +192,8 @@ function App() {
 
 
 	function resetGame() {
-		const newBottles = generateRandomState();
+		const newPalette = getNRandomColors(COLOR_PALETTES[settings.selectedPalette], NON_EMPTY_BOTTLES());
+		const newBottles = generateRandomState(newPalette);
 		setBottles(newBottles);
 		setStates([newBottles]);
 		setSelectedBottle(null);
@@ -281,10 +282,6 @@ function App() {
 					/>
 				))}
 			</div>
-				<button onClick={() => {
-					console.log(settings.selectedPaletteIndex)
-				}}
-				></button>
 		</>
 	);
 }
