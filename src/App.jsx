@@ -20,7 +20,8 @@ function App() {
 	const [bottles, setBottles] = useState(generateInitialState());
 	const [states, setStates] = useState([bottles]);
 	const [buttonsDisabled, setButtonsDisabled] = useState(false);
-	const [showSpeedrunMode, setshowSpeedrunMode] = useState(false);
+	const [showSpeedrunMode, setShowSpeedrunMode] = useState(false);
+	const [showSolver, setShowSolver] = useState(false);
 	const [speedrunActive, setSpeedrunActive] = useState(false);
 	const [currentTime, setCurrentTime] = useState(0);
 	const [timeHistory, setTimeHistory] = useState([]);
@@ -265,9 +266,6 @@ function App() {
 		{ label: 'Solve', onClick: solveGame, disabled: buttonsDisabled, className: 'blue' },
 	];
 
-	const handleToggle = () => {
-		setisSwitchToggled(!isSwitchToggled);
-	};
 
 
 	const handleSettingsChange = (name, value) => {
@@ -287,48 +285,61 @@ function App() {
 		setCurrentTime(time);
 	}
 
+	function handleSpeedrun(isSpeedrunActive) {
+		setShowSpeedrunMode(isSpeedrunActive);
+		if (isSpeedrunActive) {
+			setShowSolver(false);  // Turn off Solver mode if Speedrun is activated
+		}
+	}
+	
+	function handleSolver(isSolverActive) {
+		setShowSolver(isSolverActive);
+		if (isSolverActive) {
+			setShowSpeedrunMode(false);  // Turn off Speedrun mode if Solver is activated
+		}
+	}
+
 	return (
 		<>
-
-			{!showSpeedrunMode && (
-				<ToggleSwitch isToggled={isSwitchToggled} onToggle={handleToggle} disabled={buttonsDisabled} />
-			)}
-
 			<img src="src/assets/settings-w.png" alt="settings" className="settings-logo" onClick={toggleMenu} disabled={buttonsDisabled} />
-
-			{/* Conditionally render Toolbar based on toggle state */}
-			{!showSpeedrunMode ? (
-				<>
-					{isSwitchToggled ? (
-						<Toolbar buttons={solverButtons} buttonSize="medium" />
-					) : (
-						<Toolbar buttons={gameButtons} buttonSize="medium" />
-					)}
-				</>
-			) : (
+	
+			{/* Conditionally render the toolbar based on the active mode */}
+			{(!showSpeedrunMode && !showSolver) && (
+				<Toolbar buttons={gameButtons} buttonSize="medium" />
+			)}
+	
+			{showSpeedrunMode && (
 				<>
 					<Timer isRunning={speedrunActive} mode="minute" onTimeUpdate={handleTimeUpdate} />
 					<Toolbar buttons={speedRunButtons} buttonSize="medium" />
 				</>
 			)}
-
-
-
+	
+			{showSolver && (
+				<Toolbar buttons={solverButtons} buttonSize="medium" />
+			)}
+	
 			<SettingMenu
 				isOpen={isMenuOpen}
 				onClose={handleCloseMenu}
 				settings={settings}
 				onSettingsChange={handleSettingsChange}
-				handleSpeedrun={() => {
-					setshowSpeedrunMode(!showSpeedrunMode);
-					// setButtonsDisabled(!buttonsDisabled); renable later when you have to cancel speedrun
+				handleSpeedrun={(isActive) => {
+					setShowSpeedrunMode(isActive);
+					if (isActive) {
+						setShowSolver(false); // Ensure Solver mode is turned off when Speedrun is activated
+					}
+				}}
+				handleSolver={(isActive) => {
+					setShowSolver(isActive);
+					if (isActive) {
+						setShowSpeedrunMode(false); // Ensure Speedrun mode is turned off when Solver is activated
+					}
 				}}
 				handleAnimation={() => { }}
-				buttonsDisabled={showSpeedrunMode}
+				buttonsDisabled={showSpeedrunMode || showSolver}
 			/>
-
-
-
+	
 			<div className='bottles'>
 				{bottles.map(bottle => (
 					<Bottle
@@ -342,15 +353,14 @@ function App() {
 					/>
 				))}
 			</div>
-
+	
 			{showSpeedrunMode && (
-				<div className='time=history'>
+				<div className='time-history'>
 					{timeHistory.map((time, index) => (
 						<div key={index}>{formatTime(time)}</div>
 					))}
 				</div>
 			)}
-
 		</>
 	);
 }

@@ -6,32 +6,32 @@ import Toolbar from './Toolbar';
 
 interface SettingsMenuProps {
   isOpen: boolean;
-  onClose: (settingModified: boolean) => void; // Pass the settingModified flag
-  handleSpeedrun: () => void;
-  handleAnimation: () => void;
+  onClose: (settingModified: boolean) => void;
+  handleSpeedrun: (isActive: boolean) => void;
+  handleSolver: (isActive: boolean) => void;
   buttonsDisabled?: boolean;
 }
 
 function SettingMenu(props: SettingsMenuProps) {
   const [, setLocalSettings] = useState(settings);
   const [tempSettings, setTempSettings] = useState(settings);
+  const [settingModified, setSettingModified] = useState(false);
   const [isSpeedRunEnabled, setIsSpeedRunEnabled] = useState(false);
-  const [isAnimationsEnabled, setIsAnimationsEnabled] = useState(false);
-  const [settingModified, setSettingModified] = useState(false); // Track if a setting was modified
+  const [isSolverEnabled, setIsSolverEnabled] = useState(false);
+  const [isAnimationsEnabled, setIsAnimationsEnabled] = useState(settings.isAnimationsEnabled);
 
   useEffect(() => {
-    // Reset settingModified whenever the menu is opened
     setSettingModified(false);
 
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape' && props.isOpen) {
-        handleClose(false); // Pass false if exiting without saving
+        handleClose(false);
       }
     };
 
     function handleClick(event: MouseEvent) {
       if (event.target === document.querySelector('.settings-menu-overlay')) {
-        handleClose(false); // Pass false if exiting without saving
+        handleClose(false);
       }
     }
 
@@ -45,25 +45,24 @@ function SettingMenu(props: SettingsMenuProps) {
   }, [props.isOpen, props.onClose]);
 
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const { name, value } = event.target;
-    const intValue = parseInt(value, 10);
+    const { name, value, type, checked } = event.target;
+    const parsedValue = type === 'checkbox' ? checked : parseInt(value, 10);
 
     setTempSettings((prevSettings) => ({
       ...prevSettings,
-      [name]: intValue,
+      [name]: parsedValue,
     }));
 
-    // Set the settingModified flag to true if any change is detected
     setSettingModified(true);
   };
 
   function handleClose(saveChanges: boolean) {
     if (saveChanges) {
-      handleSave(); // Save changes if saveChanges is true
+      handleSave();
     } else {
-      setSettingModified(false); // Reset the settingModified flag if closing without saving
+      setSettingModified(false);
     }
-    props.onClose(settingModified); // Pass settingModified to onClose
+    props.onClose(settingModified);
   }
 
   function validateSettings() {
@@ -77,6 +76,7 @@ function SettingMenu(props: SettingsMenuProps) {
       bottleLength,
       maxBottleLength: tempSettings.maxBottleLength,
       selectedPalette: tempSettings.selectedPalette,
+      isAnimationsEnabled: isAnimationsEnabled,
     };
   };
 
@@ -87,28 +87,39 @@ function SettingMenu(props: SettingsMenuProps) {
     settings.emptyBottles = validatedSettings.emptyBottles;
     settings.bottleLength = validatedSettings.bottleLength;
     settings.selectedPalette = validatedSettings.selectedPalette;
+    settings.isAnimationsEnabled = validatedSettings.isAnimationsEnabled;
   };
+
+  function toggleSpeedRun() {
+    const newSpeedRunState = !isSpeedRunEnabled;
+    setIsSpeedRunEnabled(newSpeedRunState);
+    setIsSolverEnabled(false); // Disable solver mode when speedrun is enabled
+    props.handleSpeedrun(newSpeedRunState);
+    props.handleSolver(false); // Make sure solver is off
+  }
+
+  function toggleSolver() {
+    const newSolverState = !isSolverEnabled;
+    setIsSolverEnabled(newSolverState);
+    setIsSpeedRunEnabled(false); // Disable speedrun mode when solver is enabled
+    props.handleSolver(newSolverState);
+    props.handleSpeedrun(false); // Make sure speedrun is off
+  }
 
   const settingButtons = [
     {
       label: 'SpeedRun',
-      onClick: function () {
-        props.handleSpeedrun();
-        setIsSpeedRunEnabled(!isSpeedRunEnabled); // Toggle the button state
-      },
+      onClick: toggleSpeedRun,
       disabled: false,
       toggle: isSpeedRunEnabled,
       className: isSpeedRunEnabled ? 'blue' : '',
     },
     {
-      label: 'Animations',
-      onClick: function () {
-        props.handleAnimation();
-        setIsAnimationsEnabled(!isAnimationsEnabled); // Toggle the button state
-      },
+      label: 'Solver',
+      onClick: toggleSolver,
       disabled: false,
-      toggle: isAnimationsEnabled,
-      className: isAnimationsEnabled ? 'blue' : '',
+      toggle: isSolverEnabled,
+      className: isSolverEnabled ? 'blue' : '',
     },
   ];
 
@@ -165,6 +176,18 @@ function SettingMenu(props: SettingsMenuProps) {
             max={COLOR_PALETTES_LENGTH}
             disabled={props.buttonsDisabled}
           />
+          <SettingItem
+            type="checkbox"
+            label="Enable Animations"
+            id="isAnimationsEnabled"
+            name="isAnimationsEnabled"
+            value={isAnimationsEnabled}
+            onChange={(event) => {
+              setIsAnimationsEnabled(event.target.checked);
+            }}
+            disabled={props.buttonsDisabled}
+          />
+
           <Toolbar buttons={settingButtons} buttonSize='small' />
           <Toolbar buttons={menuButtons} buttonSize='small' />
         </div>
