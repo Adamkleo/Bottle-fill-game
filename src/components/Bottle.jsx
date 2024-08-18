@@ -95,7 +95,7 @@ const Bottle = ({ startY, colors, onClick, selected, size }) => {
                     L ${startX + 50},${startY - 20}
                 `}
                 fill="gray"
-                fillOpacity="15%"
+                fillOpacity="30%"
                 stroke="white"
                 strokeWidth="3"
             />

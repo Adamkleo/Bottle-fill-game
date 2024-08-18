@@ -24,9 +24,9 @@
   cursor: pointer;
   width: 30px;
   height: 30px;
-  position: absolute; /* Allows you to position it relative to the nearest positioned ancestor */
-  top: 20px; /* Distance from the top of the container */
-  left: 20px; /* Distance from the left of the container */
+  position: absolute; 
+  top: 20px; 
+  left: 20px; 
   transition: transform 0.3s;
 }
 

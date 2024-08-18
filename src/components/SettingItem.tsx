@@ -10,6 +10,7 @@ interface SettingItemProps {
   min?: number;
   max?: number;
   type: 'number' | 'range';
+  disabled?: boolean;
 }
 
 
@@ -30,6 +31,7 @@ function SettingItem (props: SettingItemProps  ) {
         min={props.min}
         max={props.max}
         className={inputClassName}
+        disabled={props.disabled}
       />
     </div>
   );

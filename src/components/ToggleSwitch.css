@@ -1,23 +1,24 @@
 
-/* Container for the toggle switch */
+
 .toggle-switch {
     position: relative;
     width: 60px;
     height: 30px;
-    margin: 0 auto; /* Center horizontally */
+    margin: 0 auto; 
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-bottom: 20px;
   }
   
-  /* Hidden checkbox input */
+  
   .toggle-input {
     opacity: 0;
     width: 0;
     height: 0;
   }
   
-  /* The slider background */
+  
   .toggle-label {
     position: absolute;
     top: 0;
@@ -30,7 +31,7 @@
     transition: background-color 0.3s ease;
   }
   
-  /* The circle inside the slider */
+  
   .toggle-ball {
     position: absolute;
     top: 3px;
@@ -42,7 +43,7 @@
     transition: transform 0.3s ease;
   }
   
-  /* Toggle on state */
+  
   .toggle-input:checked + .toggle-label {
     background-color: #66bb6a;
   }

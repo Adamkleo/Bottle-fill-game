@@ -8,63 +8,32 @@ export const settings = {
   selectedPalette: 1
 };
 
-export const MIN_EMOTY_BOTTLES = 2;
+export const MIN_EMPTY_BOTTLES = 2;
 export const MAX_BOTTLES = 14;
 export const MIN_BOTTLE_LENGTH = 2;
 export const MAX_BOTTLE_LENGTH = 7;
 
-export const MIN_BOTTLES = () => MIN_EMOTY_BOTTLES + 2
+export const MIN_BOTTLES = () => MIN_EMPTY_BOTTLES + 2
 export const MAX_EMPTY_BOTTLES = () => settings.numBottles - 2
 export const NON_EMPTY_BOTTLES = () => settings.numBottles - settings.emptyBottles;
 
-
-
 const COLORS1 = [
-  "#FF5733", // Vivid Red-Orange
-  "#C70039", // Deep Red
-  "#900C3F", // Dark Purple
-  "#581845", // Dark Maroon
-  "#1F618D", // Strong Blue
-  "#2874E6", // Medium Blue
-  "#28B463", // Vibrant Green
-  "#239B56", // Deep Green
-  "#F1C40F", // Bright Yellow
-  "#D35400", // Strong Orange
-  "#7D3C98", // Rich Purple
-  "#566573" // Steely Gray
+  "#FF0000", // Red
+  "#FFA500", // Orange
+  "#FFFF00", // Yellow
+  "#008000", // Green
+  "#00FFFF", // Cyan
+  "#0000FF", // Blue
+  "#800080", // Purple
+  "#FFC0CB", // Pink
+  "#A52A2A", // Brown
+  "#808080", // Gray
+  "#ADD8E6", // Light Blue
+  "#FF00FF"  // Magenta
 ];
+
 
 const COLORS2 = [
-  "#FF0000", // Pure Red
-  "#00FF00", // Pure Green
-  "#0000FF", // Pure Blue
-  "#FFFF00", // Yellow
-  "#FF00FF", // Magenta
-  "#00FFFF", // Cyan
-  "#FFA500", // Orange
-  "#800080", // Purple
-  "#008000", // Dark Green
-  "#000080", // Navy Blue
-  "#FFC0CB", // Pink
-  "#A52A2A"  // Brown
-];
-
-const COLORS3 = [
-  '#2d00f7',
-  '#ff69eb',
-  '#b100e8',
-  '#d100d1',
-  '#e500a4',
-  '#b9faf8',
-  '#ff6d00',
-  '#ff9e00',
-  '#4cc9f0',
-  '#caff8a',
-  '#ffee32',
-  '#9cf945'
-];
-
-const COLORS4 = [
   "#FF6347", // Tomato
   "#4682B4", // Steel Blue
   "#32CD32", // Lime Green
@@ -79,12 +48,26 @@ const COLORS4 = [
   "#20B2AA"  // Light Sea Green
 ];
 
+const COLORS3 = [
+  "#FF0000", // Pure Red
+  "#00FF00", // Pure Green
+  "#0000FF", // Pure Blue
+  "#FFFF00", // Yellow
+  "#FF00FF", // Magenta
+  "#00FFFF", // Cyan
+  "#FFA500", // Orange
+  "#800080", // Purple
+  "#008000", // Dark Green
+  "#000080", // Navy Blue
+  "#FFC0CB", // Pink
+  "#A52A2A"  // Brown
+];
+
 
 export const COLOR_PALETTES = {
   1: COLORS1,
   2: COLORS2,
-  3: COLORS3,
-  4: COLORS4
+  3: COLORS3
 }
 
 export const COLOR_PALETTES_LENGTH = Object.keys(COLOR_PALETTES).length;

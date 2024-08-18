@@ -4,30 +4,49 @@ import Bottle from './components/Bottle';
 import Toolbar from './components/Toolbar';
 import SettingMenu from './components/SettingMenu';
 import ToggleSwitch from './components/ToggleSwitch';
-import { getNRandomColors, getRandomElements, allEqual } from './ts/utils';
+import Timer from './components/Timer';
+import { getNRandomColors, getRandomElements, allEqual, formatTime } from './ts/utils';
 import { Solver } from './solver/solver';
 import { settings, NON_EMPTY_BOTTLES, COLOR_PALETTES } from './ts/constants';
 
 
 function App() {
 
-	const numColorsNeeded = NON_EMPTY_BOTTLES();	
-
+	const numColorsNeeded = NON_EMPTY_BOTTLES();
 
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
-	const [isToggled, setIsToggled] = useState(false);
+	const [isSwitchToggled, setisSwitchToggled] = useState(false);
 	const [selectedBottle, setSelectedBottle] = useState(null);
 	const [bottles, setBottles] = useState(generateInitialState());
 	const [states, setStates] = useState([bottles]);
 	const [buttonsDisabled, setButtonsDisabled] = useState(false);
+	const [showSpeedrunMode, setshowSpeedrunMode] = useState(false);
+	const [speedrunActive, setSpeedrunActive] = useState(false);
+	const [currentTime, setCurrentTime] = useState(0);
+	const [timeHistory, setTimeHistory] = useState([]);
+	const [undoButtonDisabled, setUndoButtonDisabled] = useState(false);
 
 	let solver = new Solver();
-
-
 
 	useEffect(() => {
 		checkIfWin(bottles)
 	}, [bottles]);
+
+	useEffect(() => {
+		setUndoButtonDisabled(false);
+		if (states.length === 1) {
+			setUndoButtonDisabled(true);
+		}
+	}, [bottles]);
+
+	useEffect(() => {
+		if (!showSpeedrunMode) {
+			setSpeedrunActive(false);
+		}
+		if (showSpeedrunMode) {
+			setBottles(generateInitialState());
+		}
+	}, [showSpeedrunMode]);
 
 
 	function generateInitialState() {
@@ -60,6 +79,10 @@ function App() {
 		// and that all remaining bottles are full and uniform in color
 		if (emptyBottles.length === settings.emptyBottles && fullBottles.length === NON_EMPTY_BOTTLES()) {
 			setBottles(bottles);
+			if (showSpeedrunMode) {
+				setTimeHistory([...timeHistory, currentTime]);
+				setSpeedrunActive(false);
+			}
 			winAnimation();
 			setButtonsDisabled(false);
 		}
@@ -217,10 +240,25 @@ function App() {
 		setButtonsDisabled(!buttonsDisabled);
 	};
 
+	const startSpeedrun = () => {
+		resetGame();
+		setSpeedrunActive(true);
+	}
+
+	const endSpeedrun = () => {
+		setBottles(generateInitialState)
+		setSpeedrunActive(false);
+	}
 
 	const gameButtons = [
-		{ label: 'Undo', onClick: undo, disabled: buttonsDisabled, className: 'red' },
+		{ label: 'Undo', onClick: undo, disabled: undoButtonDisabled, className: 'red' },
 		{ label: 'New Game', onClick: resetGame, disabled: buttonsDisabled, className: 'green' },
+	];
+
+	const speedRunButtons = [
+		{ label: 'End', onClick: endSpeedrun, disabled: !speedrunActive, className: 'red' },
+		{ label: 'Undo', onClick: undo, disabled: undoButtonDisabled, className: 'red' },
+		{ label: 'New Game', onClick: startSpeedrun, disabled: speedrunActive, className: 'green' },
 	];
 
 	const solverButtons = [
@@ -228,7 +266,7 @@ function App() {
 	];
 
 	const handleToggle = () => {
-		setIsToggled(!isToggled);
+		setisSwitchToggled(!isSwitchToggled);
 	};
 
 
@@ -236,26 +274,42 @@ function App() {
 		settings[name] = value;
 	};
 
-	const handleCloseMenu = () => {
+	const handleCloseMenu = (settingModified) => {
 		setIsMenuOpen(false);
 		setButtonsDisabled(false);
-		const newInitialState = generateInitialState();
-		setBottles(newInitialState)
-		setStates([newInitialState])
+		if (settingModified) {
+			resetGame();
+		}
+		setSelectedBottle(null);
+	}
+
+	function handleTimeUpdate(time) {
+		setCurrentTime(time);
 	}
 
 	return (
 		<>
 
-			<ToggleSwitch isToggled={isToggled} onToggle={handleToggle} disabled={buttonsDisabled} />
+			{!showSpeedrunMode && (
+				<ToggleSwitch isToggled={isSwitchToggled} onToggle={handleToggle} disabled={buttonsDisabled} />
+			)}
 
 			<img src="src/assets/settings-w.png" alt="settings" className="settings-logo" onClick={toggleMenu} disabled={buttonsDisabled} />
 
 			{/* Conditionally render Toolbar based on toggle state */}
-			{isToggled ? (
-				<Toolbar buttons={solverButtons} buttonSize='large' />
+			{!showSpeedrunMode ? (
+				<>
+					{isSwitchToggled ? (
+						<Toolbar buttons={solverButtons} buttonSize="medium" />
+					) : (
+						<Toolbar buttons={gameButtons} buttonSize="medium" />
+					)}
+				</>
 			) : (
-				<Toolbar buttons={gameButtons} buttonSize='large' />
+				<>
+					<Timer isRunning={speedrunActive} mode="minute" onTimeUpdate={handleTimeUpdate} />
+					<Toolbar buttons={speedRunButtons} buttonSize="medium" />
+				</>
 			)}
 
 
@@ -265,9 +319,15 @@ function App() {
 				onClose={handleCloseMenu}
 				settings={settings}
 				onSettingsChange={handleSettingsChange}
-				handleSpeedrun={() => { }}
+				handleSpeedrun={() => {
+					setshowSpeedrunMode(!showSpeedrunMode);
+					// setButtonsDisabled(!buttonsDisabled); renable later when you have to cancel speedrun
+				}}
 				handleAnimation={() => { }}
+				buttonsDisabled={showSpeedrunMode}
 			/>
+
+
 
 			<div className='bottles'>
 				{bottles.map(bottle => (
@@ -282,6 +342,15 @@ function App() {
 					/>
 				))}
 			</div>
+
+			{showSpeedrunMode && (
+				<div className='time=history'>
+					{timeHistory.map((time, index) => (
+						<div key={index}>{formatTime(time)}</div>
+					))}
+				</div>
+			)}
+
 		</>
 	);
 }

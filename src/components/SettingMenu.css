@@ -20,7 +20,7 @@
 }
 
 .settings-menu {
-  background: #7C7C7C;  /* Solid gray background */
+  background: #7C7C7C;  
   border-bottom: 6px inset rgba(0, 0, 0, 0.5);
   border-left: 6px inset rgba(0, 0, 0, 0.5);
   border-right: 6px inset rgba(255, 255, 255, 0.5);
@@ -42,7 +42,7 @@
   bottom: -15px;
   z-index: -1;
   border-radius: 12px;
-  /* background: linear-gradient(10deg, rgba(0, 183, 244, 0.828), rgb(85, 26, 205));  */ 
+   
   filter: blur(15px);
   opacity: 1;
 }

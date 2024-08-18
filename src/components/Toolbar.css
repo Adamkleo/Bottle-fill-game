@@ -1,6 +1,6 @@
 @import url(https://fonts.googleapis.com/css?family=VT323);
 
-/* Base toolbar styles */
+
 .toolbar {
     display: flex;
     align-items: center;
@@ -23,7 +23,7 @@
     transition: background 0.3s ease;
 }
 
-/* Toolbar size variations */
+
 .toolbar-large button {
     font-size: 2.2rem;
     min-width: 200px;

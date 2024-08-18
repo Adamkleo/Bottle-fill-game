@@ -66,3 +66,21 @@ export function getRandomElements(obj: { [key: string]: number }, N: number): st
 
     return elements;
 }
+
+
+
+type TimerMode = 'hour' | 'minute' | 'second';
+
+export function formatTime(time: number, mode: TimerMode): string {
+    const hours = Math.floor(time / 3_600_000).toString().padStart(2, '0'); // 3,600,000 ms in an hour
+    const minutes = Math.floor((time % 3_600_000) / 60_000).toString().padStart(2, '0'); // 60,000 ms in a minute
+    const seconds = Math.floor((time % 60_000) / 1_000).toString().padStart(2, '0'); // 1,000 ms in a second
+    const milliseconds = Math.floor((time % 1_000) / 10).toString().padStart(2, '0'); // Keep two-digit milliseconds
+
+    if (mode === 'hour') {
+        return `${hours}:${minutes}:${seconds}:${milliseconds}`;
+    } else if (mode === 'minute') {
+        return `${minutes}:${seconds}:${milliseconds}`;
+    }
+    return `${seconds}:${milliseconds}`;
+}

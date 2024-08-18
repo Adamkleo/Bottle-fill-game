@@ -1,5 +1,3 @@
-/* bottle class should increase in size on hover but it should be done as a transition */
-/* it should scale up to 1.1 its size */
 
 .bottle {
   transition: transform 0.3s;
