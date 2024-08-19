@@ -1,6 +1,6 @@
 import { Queue } from '../ts/queue';
 import { GameState, GameConfig } from './GameState';
-import { settings } from '../ts/constants';
+import { settings } from '../ts/options';
 
 interface BottleState {
     id: number;

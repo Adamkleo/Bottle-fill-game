@@ -1,10 +1,23 @@
 import React from 'react';
 import './Bottle.css';
 
-const Bottle = ({ startY, colors, onClick, selected, size }) => {
+
+const Bottle = ({ startY, colors, onClick, selected, size, number }) => {
     const startX = 25; // Center the bottle horizontally within the 100px wide area
     const colorCellSize = 50;
-    const bottleHeight = (size * colorCellSize) + 60; // Adjust height dynamically
+    const bottleHeight = number != null ? (size * colorCellSize) + 80 : (size * colorCellSize) + 50;
+
+    function computePadding(size) {
+        const paddingMap = {
+            2: 10,
+            3: 7,
+            4: 3,
+            5: -2,
+            6: -8,
+            7: -12
+        };
+        return paddingMap[size] || 0; // Return 0 or a default value if the size is not in the map
+    }
 
     function generateColorSegment(startY, index) {
         const startX = 25; // Assuming startX is constant
@@ -101,6 +114,7 @@ const Bottle = ({ startY, colors, onClick, selected, size }) => {
             />
 
             <ellipse cx="50" cy="29" rx="25" ry="8" fill="#747474" stroke="white" strokeWidth="3" />
+            <text x={(startX + 65) / 2} y={startY + size * 54 + computePadding(size)} fill='white' className='bottle-number'>{number}</text>
 
 
         </svg>

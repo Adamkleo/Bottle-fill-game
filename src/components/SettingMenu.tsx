@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './SettingMenu.css';
-import { settings, MAX_EMPTY_BOTTLES, MAX_BOTTLES, MIN_BOTTLES, MIN_BOTTLE_LENGTH, MAX_BOTTLE_LENGTH, COLOR_PALETTES_LENGTH, MIN_EMPTY_BOTTLES } from '../ts/constants';
+import { settings, MAX_EMPTY_BOTTLES, MAX_BOTTLES, MIN_BOTTLES, MIN_BOTTLE_LENGTH, MAX_BOTTLE_LENGTH, COLOR_PALETTES_LENGTH, MIN_EMPTY_BOTTLES } from '../ts/options';
 import SettingItem from './SettingItem';
 import Toolbar from './Toolbar';
 

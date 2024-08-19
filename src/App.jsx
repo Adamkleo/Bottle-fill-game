@@ -3,11 +3,11 @@ import './App.css';
 import Bottle from './components/Bottle';
 import Toolbar from './components/Toolbar';
 import SettingMenu from './components/SettingMenu';
-import ToggleSwitch from './components/ToggleSwitch';
 import Timer from './components/Timer';
 import { getNRandomColors, getRandomElements, allEqual, formatTime } from './ts/utils';
 import { Solver } from './solver/solver';
-import { settings, NON_EMPTY_BOTTLES, COLOR_PALETTES } from './ts/constants';
+import { settings, NON_EMPTY_BOTTLES, COLOR_PALETTES, BOTTLE_KEY_BINDS } from './ts/options';
+import { handleKeyPress } from './ts/keyHandlers';
 
 
 function App() {
@@ -15,7 +15,6 @@ function App() {
 	const numColorsNeeded = NON_EMPTY_BOTTLES();
 
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
-	const [isSwitchToggled, setisSwitchToggled] = useState(false);
 	const [selectedBottle, setSelectedBottle] = useState(null);
 	const [bottles, setBottles] = useState(generateInitialState());
 	const [states, setStates] = useState([bottles]);
@@ -26,8 +25,59 @@ function App() {
 	const [currentTime, setCurrentTime] = useState(0);
 	const [timeHistory, setTimeHistory] = useState([]);
 	const [undoButtonDisabled, setUndoButtonDisabled] = useState(false);
+	const [currentGame, setCurrentGame] = useState(null);
 
 	let solver = new Solver();
+
+	const actions = {
+		moveUp: () => console.log('Up arrow key action'),
+		moveDown: () => console.log('Down arrow key action'),
+		confirm: () => console.log('Enter key action'),
+		escape: () => setSelectedBottle(null),
+		
+		// Bottle selection
+		one: () => handleNumberPress(0),
+		two: () => handleNumberPress(1),
+		three: () => handleNumberPress(2),
+		four: () => handleNumberPress(3),
+		five: () => handleNumberPress(4),
+		six: () => handleNumberPress(5),
+		seven: () => handleNumberPress(6),
+		q: () => handleNumberPress(7),
+		w: () => handleNumberPress(8),
+		e: () => handleNumberPress(9),
+		r: () => handleNumberPress(10),
+		t: () => handleNumberPress(11),
+		y: () => handleNumberPress(12),
+		u: () => handleNumberPress(13),
+		escape: () => setSelectedBottle(null),
+	};
+	
+	useEffect(() => {
+		const keyListener = (event) => handleKeyPress(event, actions);
+		window.addEventListener('keydown', keyListener);
+
+		return () => {
+			window.removeEventListener('keydown', keyListener);
+		};
+	}, [actions]);
+
+
+	function handleNumberPress(bottleIndex) {
+		if (selectedBottle === null) {
+			// No bottle selected yet, so select this one
+			setSelectedBottle(bottleIndex);
+		} else {
+			// A bottle is already selected, try to make a move
+			const newBottles = makeMove(selectedBottle, bottleIndex);
+			if (newBottles) {
+				setBottles(newBottles);
+				setStates([...states, newBottles]);
+			}
+			setSelectedBottle(null);
+		}
+	}
+	
 
 	useEffect(() => {
 		checkIfWin(bottles)
@@ -50,10 +100,11 @@ function App() {
 	}, [showSpeedrunMode]);
 
 
+
 	function generateInitialState() {
 		let bottles = [];
 		for (let i = 0; i < settings.numBottles; i++) {
-			bottles.push({ id: i, colors: [], freeSpace: numColorsNeeded });
+			bottles.push({ id: i, colors: [], freeSpace: numColorsNeeded, number: BOTTLE_KEY_BINDS[i] });
 		}
 		return bottles
 	}
@@ -62,9 +113,9 @@ function App() {
 		let bottles = [];
 		for (let i = 0; i < settings.numBottles; i++) {
 			if (i < NON_EMPTY_BOTTLES()) {
-				bottles.push({ id: i, colors: getRandomElements(palette, settings.bottleLength), freeSpace: 0 });
+				bottles.push({ id: i, colors: getRandomElements(palette, settings.bottleLength), freeSpace: 0, number: BOTTLE_KEY_BINDS[i] });
 			} else {
-				bottles.push({ id: i, colors: [], freeSpace: settings.bottleLength });
+				bottles.push({ id: i, colors: [], freeSpace: settings.bottleLength, number: BOTTLE_KEY_BINDS[i] });
 			}
 		}
 		return bottles;
@@ -127,12 +178,85 @@ function App() {
 		}, 100);
 	}
 
+	function isValidMove(from, to) {
+		// clone the bottles
+		let bottlesClone = bottles;
+		// Check if 'from' and 'to' bottles are within the bounds and not the same
+		if (from < 0 || from >= settings.numBottles || to < 0 || to >= settings.numBottles || from === to) {
+			return false;
+		}
+
+		// Check if the 'from' bottle is empty
+		if (bottlesClone[from].freeSpace === settings.bottleLength) {
+			return false;
+		}
+
+		// Check if the 'to' bottle is full
+		if (bottlesClone[to].freeSpace === 0) {
+			return false;
+		}
+
+		// Check if the 'to' bottle is empty
+		if (bottlesClone[to].freeSpace === settings.bottleLength) {
+			return true;
+		}
+
+		// Check if the colors of the top bottles are the same
+		const topOfFrom = bottlesClone[from].colors[bottlesClone[from].colors.length - 1];
+		const topOfTo = bottlesClone[to].colors[bottlesClone[to].colors.length - 1];
+		return topOfFrom === topOfTo;
+	}
+
+	function makeMove(fromBottleIndex, toBottleIndex) {
+		if (!isValidMove(fromBottleIndex, toBottleIndex)) {
+			return;
+		}
+
+		// Create a deep copy of the game state
+		let bottlesClone = bottles.map(bottle => ({ ...bottle, colors: [...bottle.colors] }));
+
+		// Extract 'from' and 'to' bottles
+		let fromBottle = bottlesClone[fromBottleIndex];
+		let toBottle = bottlesClone[toBottleIndex];
+
+		// Get the top color of the 'from' bottle
+		const topColor = fromBottle.colors[fromBottle.colors.length - 1];
+
+		// Count consecutive matching colors in the 'from' bottle
+		let count = 0;
+		while (fromBottle.colors.length > 0 && fromBottle.colors[fromBottle.colors.length - 1] === topColor) {
+			count++;
+			fromBottle.colors.pop(); // Remove the matching color
+		}
+
+		// Calculate how many colors can be moved to the 'to' bottle
+		const availableSpace = settings.bottleLength - toBottle.colors.length;
+		const colorsToMove = Math.min(count, availableSpace);
+
+		// Move the colors to the 'to' bottle
+		for (let i = 0; i < colorsToMove; i++) {
+			toBottle.colors.push(topColor);
+		}
+
+		// If there are any remaining colors in 'from' that couldn't be moved, put them back
+		const remainingColors = count - colorsToMove;
+		for (let i = 0; i < remainingColors; i++) {
+			fromBottle.colors.push(topColor);
+		}
+
+		// Update freeSpace properties accordingly
+		bottlesClone[fromBottleIndex].freeSpace = settings.bottleLength - fromBottle.colors.length;
+		bottlesClone[toBottleIndex].freeSpace = settings.bottleLength - toBottle.colors.length;
+
+		return bottlesClone;
+	}
+
+
 
 	function handleClick(id) {
 
 		const selected = selectedBottle;
 		const targetBottle = bottles[id];
-
 
 		if (targetBottle.colors.length === 0 && selected === null) {
 			return;
@@ -150,59 +274,13 @@ function App() {
 			return;
 		}
 
-		let removed_colors = [];
-
-		// If a different bottle is selected and the clicked bottle is not full, move the color
-		const topOfTarget = targetBottle.colors[targetBottle.colors.length - 1];
-		const topOfSelected = bottles[selected].colors[bottles[selected].colors.length - 1];
-		if (targetBottle.colors.length < 4 && bottles[selected].colors.length > 0 && (targetBottle.colors.length === 0 || topOfTarget === topOfSelected)) {
-			const newBottles = bottles.map(bottle => {
-				if (bottle.id === selected) {
-					const newColors = [...bottle.colors];
-
-					let removed_color;
-					do {
-						removed_color = newColors.pop();
-						removed_colors.push(removed_color);
-					} while (
-						newColors.length > 0 &&
-						newColors[newColors.length - 1] === removed_color
-					);
-
-					let num_removed = removed_colors.length
-					let target_capacity = targetBottle.freeSpace
-					if (num_removed > target_capacity) {
-						let difference = num_removed - target_capacity
-						for (let i = 0; i < difference; i++) {
-							let removal = removed_colors.pop()
-							newColors.push(removal)
-						}
-					}
-
-					return { ...bottle, colors: newColors, freeSpace: bottle.freeSpace + removed_colors.length };
-				}
-
-				return bottle; // Return unchanged bottles immediately
-			}).map(bottle => {
-				if (bottle.id === id) {
-					const newColors = [...bottle.colors, ...removed_colors];
-					return { ...bottle, colors: newColors, freeSpace: bottle.freeSpace - removed_colors.length };
-				}
-				return bottle; // Return unchanged bottles immediately
-			});
-
+		// If the clicked bottle is not the selected one, move the colors
+		const newBottles = makeMove(selected, id);
+		if (newBottles) {
 			setBottles(newBottles);
 			setStates([...states, newBottles]);
-
-
-			setSelectedBottle(null);
-
-
-			return;
 		}
-		// Otherwise, select the new bottle
 		setSelectedBottle(null);
-
 	}
 
 	function undo() {
@@ -219,6 +297,7 @@ function App() {
 		const newPalette = getNRandomColors(COLOR_PALETTES[settings.selectedPalette], NON_EMPTY_BOTTLES());
 		const newBottles = generateRandomState(newPalette);
 		setBottles(newBottles);
+		setCurrentGame(newBottles);
 		setStates([newBottles]);
 		setSelectedBottle(null);
 		setButtonsDisabled(false);
@@ -285,40 +364,35 @@ function App() {
 		setCurrentTime(time);
 	}
 
-	function handleSpeedrun(isSpeedrunActive) {
-		setShowSpeedrunMode(isSpeedrunActive);
-		if (isSpeedrunActive) {
-			setShowSolver(false);  // Turn off Solver mode if Speedrun is activated
-		}
+	function handleRestart() {
+		if (currentGame === null) return;
+
+		setBottles(currentGame);
+		setStates([currentGame]);
 	}
-	
-	function handleSolver(isSolverActive) {
-		setShowSolver(isSolverActive);
-		if (isSolverActive) {
-			setShowSpeedrunMode(false);  // Turn off Speedrun mode if Solver is activated
-		}
-	}
+
 
 	return (
 		<>
 			<img src="src/assets/settings-w.png" alt="settings" className="settings-logo" onClick={toggleMenu} disabled={buttonsDisabled} />
-	
+			<img src="src/assets/restart-w.png" className='restart-logo' alt="restart" onClick={handleRestart} />
+
 			{/* Conditionally render the toolbar based on the active mode */}
 			{(!showSpeedrunMode && !showSolver) && (
 				<Toolbar buttons={gameButtons} buttonSize="medium" />
 			)}
-	
+
 			{showSpeedrunMode && (
 				<>
 					<Timer isRunning={speedrunActive} mode="minute" onTimeUpdate={handleTimeUpdate} />
 					<Toolbar buttons={speedRunButtons} buttonSize="medium" />
 				</>
 			)}
-	
+
 			{showSolver && (
 				<Toolbar buttons={solverButtons} buttonSize="medium" />
 			)}
-	
+
 			<SettingMenu
 				isOpen={isMenuOpen}
 				onClose={handleCloseMenu}
@@ -339,7 +413,7 @@ function App() {
 				handleAnimation={() => { }}
 				buttonsDisabled={showSpeedrunMode || showSolver}
 			/>
-	
+
 			<div className='bottles'>
 				{bottles.map(bottle => (
 					<Bottle
@@ -350,10 +424,11 @@ function App() {
 						onClick={() => handleClick(bottle.id)}
 						selected={selectedBottle === bottle.id}
 						size={Math.min(settings.bottleLength, settings.maxBottleLength)}
+						number={bottle.number}
 					/>
 				))}
 			</div>
-	
+
 			{showSpeedrunMode && (
 				<div className='time-history'>
 					{timeHistory.map((time, index) => (
@@ -361,6 +436,7 @@ function App() {
 					))}
 				</div>
 			)}
+
 		</>
 	);
 }

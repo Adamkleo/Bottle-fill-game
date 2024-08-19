@@ -1,4 +1,4 @@
-import { settings } from "../ts/constants";
+import { settings } from "../ts/options";
 import { allEqual } from "../ts/utils";
 
 

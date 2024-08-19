@@ -25,11 +25,25 @@
   width: 30px;
   height: 30px;
   position: absolute; 
-  top: 20px; 
-  left: 20px; 
+  top: 25px; 
+  left: 25px; 
   transition: transform 0.3s;
 }
 
 .settings-logo:hover {
   transform: rotate(90deg);
+}
+
+.restart-logo {
+  cursor: pointer;
+  width: 35px;
+  height: 35px;
+  position: absolute; 
+  top: 25px; 
+  right: 25px; 
+  transition: transform 0.3s;
+}
+
+.restart-logo:active {
+  transform: rotate(-90deg);
 }
