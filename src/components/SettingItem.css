@@ -1,5 +1,11 @@
 @import url(https://fonts.googleapis.com/css?family=VT323);
 
+:root {
+    --checkbox-border-color: #8b8c89;
+    --checkbox-checked-color: #274c77;
+    --checkbox-hover-color: #a3cef1;
+    --checkbox-disabled-bg-color: #d9d9d9;
+}
 
 .setting-item {
     font-family: 'VT323', monospace;
@@ -13,8 +19,8 @@
     font-size: 22px;
     color: #ffffff;
     letter-spacing: 0.5px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); 
-    text-transform: uppercase; 
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    text-transform: uppercase;
 }
 
 .setting-input-number {
@@ -23,14 +29,14 @@
     padding: 6px 8px;
     font-size: 20px;
     color: #ffffff;
-    background: #333333; 
-    border: 2px solid #555555; 
-    border-radius: 3px; 
+    background: #333333;
+    border: 2px solid #555555;
+    border-radius: 3px;
     width: 40px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4), 
-                0 0 15px rgba(100, 255, 255, 0.2); 
-    transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease; 
-    
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4),
+        0 0 15px rgba(100, 255, 255, 0.2);
+    transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+
 }
 
 .setting-input-number:disabled {
@@ -40,3 +46,47 @@
 }
 
 
+.setting-input-checkbox {
+    margin-right: 18px; 
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: #fff;
+    margin-left: auto;
+    font: inherit;
+    color: #333;
+    width: 1.5em;
+    height: 1.5em;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4),
+        0 0 15px rgba(100, 255, 255, 0.2);
+    border-radius: 0.2em;
+    transform: translateY(-0.075em);
+    display: grid;
+    place-content: center;
+}
+
+.setting-input-checkbox::before {
+    content: "";
+    width: 1.2em;
+    height: 1.2em;
+    clip-path: polygon(14% 44%, 0% 65%, 50% 100%, 100% 20%, 80% 0%, 43% 62%);
+    transform: scale(0);
+    transform-origin: bottom left;
+    transition: 120ms transform ease-in-out;
+    box-shadow: inset 1em 1em rgba(0, 0, 0, 0.813);
+    /* For dark mode support */
+    background-color: CanvasText;
+}
+
+.setting-input-checkbox:checked::before {
+    transform: scale(1);
+}
+
+.setting-input-checkbox:hover {
+    border-color: #666;
+}
+
+.setting-input-checkbox:focus {
+    outline: max(2px, 0.15em) solid #333;
+    outline-offset: max(2px, 0.15em);
+}

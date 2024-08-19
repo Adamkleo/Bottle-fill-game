@@ -6,7 +6,8 @@ export const settings = {
     bottleLength: 4,
     maxBottleLength: 8,
     selectedPalette: 1,
-    isAnimationsEnabled: true
+    isAnimationsEnabled: true,
+    isBottleLabelsEnabled: false
   };
   
   export const MIN_EMPTY_BOTTLES = 2;

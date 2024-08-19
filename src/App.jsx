@@ -26,6 +26,9 @@ function App() {
 	const [timeHistory, setTimeHistory] = useState([]);
 	const [undoButtonDisabled, setUndoButtonDisabled] = useState(false);
 	const [currentGame, setCurrentGame] = useState(null);
+	const [animations, setAnimations] = useState(false);
+	const [showBottleLabels, setShowBottleLabels] = useState(false);
+
 
 	let solver = new Solver();
 
@@ -410,7 +413,7 @@ function App() {
 						setShowSpeedrunMode(false); // Ensure Speedrun mode is turned off when Solver is activated
 					}
 				}}
-				handleAnimation={() => { }}
+				handleBottleLabels={(isActive) => setShowBottleLabels(isActive)}
 				buttonsDisabled={showSpeedrunMode || showSolver}
 			/>
 
@@ -424,7 +427,7 @@ function App() {
 						onClick={() => handleClick(bottle.id)}
 						selected={selectedBottle === bottle.id}
 						size={Math.min(settings.bottleLength, settings.maxBottleLength)}
-						number={bottle.number}
+						number={showBottleLabels ? bottle.number : null}
 					/>
 				))}
 			</div>

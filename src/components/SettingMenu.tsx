@@ -9,6 +9,8 @@ interface SettingsMenuProps {
   onClose: (settingModified: boolean) => void;
   handleSpeedrun: (isActive: boolean) => void;
   handleSolver: (isActive: boolean) => void;
+  handleAnimations: (isActive: boolean) => void;
+  handleBottleLabels: (isActive: boolean) => void;
   buttonsDisabled?: boolean;
 }
 
@@ -19,6 +21,7 @@ function SettingMenu(props: SettingsMenuProps) {
   const [isSpeedRunEnabled, setIsSpeedRunEnabled] = useState(false);
   const [isSolverEnabled, setIsSolverEnabled] = useState(false);
   const [isAnimationsEnabled, setIsAnimationsEnabled] = useState(settings.isAnimationsEnabled);
+  const [isBottleLabelsEnabled, setIsBottleLabelsEnabled] = useState(settings.isBottleLabelsEnabled);
 
   useEffect(() => {
     setSettingModified(false);
@@ -77,6 +80,7 @@ function SettingMenu(props: SettingsMenuProps) {
       maxBottleLength: tempSettings.maxBottleLength,
       selectedPalette: tempSettings.selectedPalette,
       isAnimationsEnabled: isAnimationsEnabled,
+      isBottleLabelsEnabled: isBottleLabelsEnabled,
     };
   };
 
@@ -88,6 +92,7 @@ function SettingMenu(props: SettingsMenuProps) {
     settings.bottleLength = validatedSettings.bottleLength;
     settings.selectedPalette = validatedSettings.selectedPalette;
     settings.isAnimationsEnabled = validatedSettings.isAnimationsEnabled;
+    settings.isBottleLabelsEnabled = validatedSettings.isBottleLabelsEnabled;
   };
 
   function toggleSpeedRun() {
@@ -178,14 +183,28 @@ function SettingMenu(props: SettingsMenuProps) {
           />
           <SettingItem
             type="checkbox"
-            label="Enable Animations"
+            label="Animations"
             id="isAnimationsEnabled"
             name="isAnimationsEnabled"
             value={isAnimationsEnabled}
             onChange={(event) => {
-              setIsAnimationsEnabled(event.target.checked);
+              const isChecked = event.target.checked;
+              setIsAnimationsEnabled(isChecked);
             }}
-            disabled={props.buttonsDisabled}
+
+          />
+          <SettingItem
+            type="checkbox"
+            label="Bottle Labels"
+            id="isBottleLabelsEnabled"
+            name="isBottleLabelsEnabled"
+            value={isBottleLabelsEnabled}
+            onChange={(event) => {
+              const isChecked = event.target.checked;
+              setIsBottleLabelsEnabled(isChecked);
+              props.handleBottleLabels(isChecked);
+            }}
+            
           />
 
           <Toolbar buttons={settingButtons} buttonSize='small' />
