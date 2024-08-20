@@ -1,4 +1,3 @@
-// keyHandlers.ts
 
 export interface KeyActions {
     moveUp: () => void;
@@ -20,8 +19,6 @@ export interface KeyActions {
     y: () => void;
     u: () => void;
     z: () => void;
-
-    // Add more actions as needed, matching the keys you will handle
 }
 
 export function handleKeyPress(event: KeyboardEvent, actions: KeyActions) {
@@ -83,7 +80,6 @@ export function handleKeyPress(event: KeyboardEvent, actions: KeyActions) {
         case 'z':
             actions.z();
             break;
-        // Add more cases as needed
         default:
             break;
     }

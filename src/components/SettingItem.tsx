@@ -24,8 +24,8 @@ function SettingItem(props: SettingItemProps) {
         type={props.type}
         id={props.id}
         name={props.name}
-        value={props.type === 'checkbox' ? undefined : String(props.value)}  // Convert to string if not checkbox
-        checked={props.type === 'checkbox' ? Boolean(props.value) : undefined} // Handle checked for checkbox
+        value={props.type === 'checkbox' ? undefined : String(props.value)}  
+        checked={props.type === 'checkbox' ? Boolean(props.value) : undefined}
         onChange={props.onChange}
         min={props.type === 'number' ? props.min : undefined}
         max={props.type === 'number' ? props.max : undefined}

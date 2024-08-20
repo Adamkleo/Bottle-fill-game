@@ -3,6 +3,8 @@ import './App.css';
 import Bottle from './components/Bottle';
 import Toolbar from './components/Toolbar';
 import SettingMenu from './components/SettingMenu';
+
+
 import Timer from './components/Timer';
 import { getNRandomColors, getRandomElements, allEqual, formatTime } from './ts/utils';
 import { Solver } from './solver/solver';
@@ -35,12 +37,11 @@ function App() {
 	let solver = new Solver();
 
 	const actions = {
-		moveUp: () => console.log('Up arrow key action'),
-		moveDown: () => console.log('Down arrow key action'),
-		confirm: () => console.log('Enter key action'),
+		// Game controls
 		escape: () => setSelectedBottle(null),
+		z: () => undo(),
 
-
+		// Bottle controls
 		one: () => handleNumberPress(0),
 		two: () => handleNumberPress(1),
 		three: () => handleNumberPress(2),
@@ -56,8 +57,6 @@ function App() {
 		y: () => handleNumberPress(12),
 		u: () => handleNumberPress(13),
 
-		z: () => undo(),
-		escape: () => setSelectedBottle(null),
 	};
 
 	useEffect(() => {
@@ -90,6 +89,9 @@ function App() {
 
 			const newBottles = makeMove(selectedBottle, bottleIndex);
 			if (newBottles) {
+				if (bottleAnimations) {
+					animateBottleMove(selectedBottle, bottleIndex);
+				}
 				setBottles(newBottles);
 				setStates([...states, newBottles]);
 			}
@@ -378,7 +380,7 @@ function App() {
 		setIsMenuOpen(false);
 		setButtonsDisabled(false);
 		if (settingModified) {
-			resetGame();
+			setBottles(generateInitialState());
 		}
 		setSelectedBottle(null);
 	}
@@ -447,6 +449,8 @@ function App() {
 				return newMovingBottles;
 			});
 		}, 1000);
+
+
 	}
 
 
