@@ -1,12 +1,13 @@
 import React from 'react';
 import './Bottle.css';
+import { BOTTLE_SCALE } from '../ts/options';
 
 
-const Bottle = ({ startY, colors, onClick, selected, size, number }) => {
+const Bottle = ({ startY, colors, onClick, selected, size, number, transform, zIndex }) => {
     const startX = 25; // Center the bottle horizontally within the 100px wide area
     const colorCellSize = 50;
     const bottleHeight = number != null ? (size * colorCellSize) + 80 : (size * colorCellSize) + 50;
-
+    const bottleSelectScale = BOTTLE_SCALE + 0.1;
     function computePadding(size) {
         const paddingMap = {
             2: 10,
@@ -58,17 +59,27 @@ const Bottle = ({ startY, colors, onClick, selected, size, number }) => {
 
 
     return (
+
+
         <svg
             className={`bottle ${selected ? 'selected' : ''}`}
             width="100"
             height={bottleHeight} // Dynamically set the height
             viewBox={`0 0 100 ${bottleHeight}`} // Dynamically set the viewBox height
             onClick={onClick}
+            style={{
+                transform: `${transform} scale(${selected ? bottleSelectScale : BOTTLE_SCALE})`,
+                zIndex: zIndex
+            }}
         >
+
+
+
+
 
             {/* Render the color segments */}
             {colors && colors.map((color, index) => generateColorSegment(startY, index))}
-            
+
             {/* Render the first bottle shadow */}
             <path
                 d={`
@@ -78,8 +89,6 @@ const Bottle = ({ startY, colors, onClick, selected, size, number }) => {
                     L ${startX + 12},${startY + (size - 1) * colorCellSize + 5}
                     M ${startX + 4},${startY + (size - 1) * colorCellSize + 5}
                     C ${startX + 4},${startY + (size - 1) * colorCellSize + 15} ${startX + 12},${startY + (size - 1) * colorCellSize + 40} ${startX + 12},${startY + (size - 1) * colorCellSize + 5}
-
-
                 `}
                 fill="white"
                 fillOpacity="40%"

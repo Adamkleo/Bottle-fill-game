@@ -12,13 +12,37 @@
 }
 
 
-
-.bottles {
+.bottles-container {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: center;
+  flex-direction: column;
+  gap: 3rem; 
+  align-items: center; 
+  width: 100%; 
+  padding: 4rem 0; 
 }
+
+.bottle-row {
+  display: flex;
+  justify-content: center;
+
+}
+
+.bottle-row:last-child {
+  margin-bottom: 0;
+}
+
+.bottle {
+  width: 100px; 
+  height: 250px; 
+  transition: transform 0.3s;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.moving {
+  z-index: 10; /* Higher z-index for the moving bottle */
+}
+
 
 .settings-logo {
   cursor: pointer;

@@ -1,12 +1,12 @@
 // options.js
 
 export const settings = {
-    numBottles: 12,
+    numBottles: 8,
     emptyBottles: 2,
     bottleLength: 4,
     maxBottleLength: 8,
     selectedPalette: 1,
-    isAnimationsEnabled: true,
+    isAnimationsEnabled: false,
     isBottleLabelsEnabled: false
   };
   
@@ -14,6 +14,7 @@ export const settings = {
   export const MAX_BOTTLES = 14;
   export const MIN_BOTTLE_LENGTH = 2;
   export const MAX_BOTTLE_LENGTH = 7;
+  export const BOTTLE_SCALE = 1;
   
   export const MIN_BOTTLES = () => MIN_EMPTY_BOTTLES + 2
   export const MAX_EMPTY_BOTTLES = () => settings.numBottles - 2

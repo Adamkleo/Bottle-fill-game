@@ -190,6 +190,7 @@ function SettingMenu(props: SettingsMenuProps) {
             onChange={(event) => {
               const isChecked = event.target.checked;
               setIsAnimationsEnabled(isChecked);
+              props.handleAnimations(isChecked);
             }}
 
           />
