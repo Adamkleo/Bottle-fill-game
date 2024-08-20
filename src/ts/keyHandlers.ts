@@ -19,6 +19,8 @@ export interface KeyActions {
     t: () => void;
     y: () => void;
     u: () => void;
+    z: () => void;
+
     // Add more actions as needed, matching the keys you will handle
 }
 
@@ -77,6 +79,9 @@ export function handleKeyPress(event: KeyboardEvent, actions: KeyActions) {
             break;
         case 'u':
             actions.u();
+            break;
+        case 'z':
+            actions.z();
             break;
         // Add more cases as needed
         default:

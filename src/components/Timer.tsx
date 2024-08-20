@@ -7,7 +7,7 @@ const MS = 10;
 interface TimerProps {
     isRunning: boolean;
     mode: 'hour' | 'minute' | 'second';
-    onTimeUpdate?: (time: number) => void; // New prop to send the time back to the parent
+    onTimeUpdate?: (time: number) => void;
 }
 
 function Timer(props: TimerProps) {
@@ -18,26 +18,23 @@ function Timer(props: TimerProps) {
 
         if (props.isRunning) {
             interval = window.setInterval(() => {
-                setTime((time) => {
-                    const newTime = time + MS;
-                    if (props.onTimeUpdate) {
-                        props.onTimeUpdate(newTime); // Send the time back to the parent
-                    }
-                    return newTime;
-                });
+                setTime((time) => time + MS);
             }, MS);
         } else {
             setTime(0);  // Reset the timer when isRunning is false
-            if (props.onTimeUpdate) {
-                props.onTimeUpdate(0); // Send reset time to the parent
-            }
         }
 
         return () => {
             if (interval) clearInterval(interval);
         };
     }, [props.isRunning]);
-    
+
+    useEffect(() => {
+        if (props.onTimeUpdate) {
+            props.onTimeUpdate(time);
+        }
+    }, [time, props.onTimeUpdate]);
+
     return (
         <div>
             <span className="timer">{formatTime(time, props.mode)}</span>

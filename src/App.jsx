@@ -55,6 +55,8 @@ function App() {
 		t: () => handleNumberPress(11),
 		y: () => handleNumberPress(12),
 		u: () => handleNumberPress(13),
+
+		z: () => undo(),
 		escape: () => setSelectedBottle(null),
 	};
 
@@ -79,10 +81,9 @@ function App() {
 
 
 	function handleNumberPress(bottleIndex) {
+		if (bottleIndex >= settings.numBottles) return
 		if (selectedBottle === null) {
-			if (bottles[bottleIndex].colors.length === 0) {
-				return;
-			}
+			if (bottles[bottleIndex].colors.length === 0) return;
 
 			setSelectedBottle(bottleIndex);
 		} else {
@@ -103,7 +104,7 @@ function App() {
 
 	useEffect(() => {
 		setUndoButtonDisabled(false);
-		if (states.length === 1) {
+		if (states.length <= 1) {
 			setUndoButtonDisabled(true);
 		}
 	}, [bottles]);
@@ -348,6 +349,7 @@ function App() {
 
 	const endSpeedrun = () => {
 		setBottles(generateInitialState)
+		setStates([])
 		setSpeedrunActive(false);
 	}
 
