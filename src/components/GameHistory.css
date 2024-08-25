@@ -28,3 +28,7 @@
     text-shadow: 3px 3px 0px rgba(231, 3, 247, 0.5);
     text-transform: uppercase;
 }
+
+.game-history-container {
+    margin-bottom: 100px;
+}

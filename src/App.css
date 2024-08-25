@@ -31,13 +31,7 @@
   margin-bottom: 0;
 }
 
-.bottle {
-  width: 100px; 
-  height: 250px; 
-  transition: transform 0.3s;
-  cursor: pointer;
-  z-index: 1;
-}
+
 
 .moving {
   z-index: 10; /* Higher z-index for the moving bottle */

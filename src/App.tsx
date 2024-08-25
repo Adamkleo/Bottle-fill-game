@@ -1,12 +1,11 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 
-import Bottle from './components/Bottle';
 import Toolbar from './components/Toolbar';
 import SettingMenu from './components/SettingMenu';
 import GameHistory from './components/GameHistory';
 import Timer from './components/Timer';
-
+import BottleContainer from './components/BottleContainer';
 
 import { getNRandomColors, getRandomElements } from './ts/utils';
 import { Solver } from './solver/Solver';
@@ -33,10 +32,8 @@ function App() {
 	const [currentTime, setCurrentTime] = useState<number>(0);
 	const [undoButtonDisabled, setUndoButtonDisabled] = useState<boolean>(false);
 	const [currentGame, setCurrentGame] = useState<BottleData[]>([]);
-	const [bottleAnimations, setBottleAnimations] = useState<boolean>(settings.isAnimationsEnabled);
+	const [, setBottleAnimations] = useState<boolean>(settings.isAnimationsEnabled);
 	const [showBottleLabels, setShowBottleLabels] = useState<boolean>(settings.isBottleLabelsEnabled);
-	const [bottleTransforms, setBottleTransforms] = useState<{ [key: number]: string }>({});
-	const [movingBottles, setMovingBottles] = useState<boolean[]>(new Array(settings.numBottles).fill(false));
 	const [gameHistory, setGameHistory] = useState<GameStatistics[]>([]);
 	const [showGameHistory, setShowGameHistory] = useState<boolean>(false);
 	const [displaySolution, setDisplaySolution] = useState<boolean>(false);
@@ -81,18 +78,6 @@ function App() {
 			window.removeEventListener('keydown', keyListener);
 		};
 	}, [actions]);
-
-
-	useEffect(() => {
-		const handleResize = () => {
-
-			setBottleTransforms({});
-		};
-
-		window.addEventListener('resize', handleResize);
-		return () => window.removeEventListener('resize', handleResize);
-	}, []);
-
 
 
 	useEffect(() => {
@@ -216,9 +201,6 @@ function App() {
 		}
 
 		if (newBottles) {
-			if (bottleAnimations) {
-				animateBottleMove(prevSelectedBottle, selectedBottleIndex);
-			}
 			// Update the bottles and the game states
 			setBottles(newBottles);
 			setStates((prevStates) => [...prevStates, newBottles]);
@@ -317,85 +299,13 @@ function App() {
 
 	function handleRestart(): void {
 		if (currentGame === null) return;
-
 		setBottles(currentGame);
 		setStates([currentGame]);
 	}
 
-	const bottleWidth = 100;
-	const bottleHeight = 250;
-	const gap = 32;
-	const marginBottom = 16;
-	const verticalGap = 16;
-	const screenWidth = window.innerWidth;
-	const numColumns = Math.floor(screenWidth / (bottleWidth + gap));
-	const numRows = Math.ceil(settings.numBottles / numColumns);
-	const bottlesPerRow = Math.floor(settings.numBottles / numRows);
-	const remainder = settings.numBottles % numRows;
-	const bottleSpacing = bottleWidth + gap;
-	const additionalVerticalGap = 48;
-	const rowHeight = bottleHeight + verticalGap + additionalVerticalGap;
-	const rotationAngle = 55;
-
-
-	function animateBottleMove(sourceIndex: number, targetIndex: number) {
-
-		setMovingBottles(prev => {
-			const newMovingBottles = [...prev];
-			newMovingBottles[sourceIndex] = true; // Set the bottle as moving
-			return newMovingBottles;
-		});
-
-		const sourceRow = Math.floor(sourceIndex / bottlesPerRow);
-		const targetRow = Math.floor(targetIndex / bottlesPerRow);
-
-
-		const sourceCol = sourceIndex % bottlesPerRow;
-		const targetCol = targetIndex % bottlesPerRow;
-
-		let direction = sourceCol < targetCol ? 1 : -1;
-
-		const newPositionX = (targetCol - sourceCol) * bottleSpacing - 110 * direction;
-		const newPositionY = (targetRow - sourceRow) * rowHeight - 100;
-
-		setBottleTransforms(prevTransforms => ({
-			...prevTransforms,
-			[sourceIndex]: `translate(${newPositionX}px, ${newPositionY}px) rotate(${(rotationAngle) * direction}deg)`,
-		}));
-
-
-		setTimeout(() => {
-			setBottleTransforms(prevTransforms => ({
-				...prevTransforms,
-				[sourceIndex]: `translate(0px, 0px)`,
-			}));
-			setMovingBottles(prev => {
-				const newMovingBottles = [...prev];
-				newMovingBottles[sourceIndex] = false; // Reset the moving state
-				return newMovingBottles;
-			});
-		}, 1000);
-	}
-
-
-	function computeRows(): BottleData[][] {
-		const rows = [];
-		let start = 0;
-
-		for (let i = 0; i < numRows; i++) {
-			const end = start + bottlesPerRow + (i < remainder ? 1 : 0);
-			rows.push(bottles.slice(start, end));
-			start = end;
-		}
-		return rows;
-	}
-
-	const rows = useMemo(() => computeRows(), [bottles, numRows, remainder, bottlesPerRow]);
-
-
 	return (
 		<>
-			<img src="src/assets/settings-w.png" alt="settings" className="settings-logo" onClick={() => !buttonsDisabled && toggleMenu()}/>
+			<img src="src/assets/settings-w.png" alt="settings" className="settings-logo" onClick={() => !buttonsDisabled && toggleMenu()} />
 			<img src="src/assets/restart-w.png" className='restart-logo' alt="restart" onClick={() => !buttonsDisabled && handleRestart()} />
 
 			{/* Conditionally render the toolbar based on the active mode */}
@@ -435,38 +345,14 @@ function App() {
 			/>
 
 
-			<div className='bottles-container'>
-				{rows.map((row, rowIndex) => (
-					<div
-						key={rowIndex}
-						className='bottle-row'
-						style={{
-							display: 'flex',
-							justifyContent: 'center',
-							gap: `${gap}px`,
-							marginBottom: `${marginBottom}px`,
-						}}
-					>
-						{row.map((bottle, index) => {
-							const globalIndex = rowIndex * bottlesPerRow + index;
-							return (
-								<Bottle
-									key={bottle.id}
-									startY={50}
-									colors={bottle.colors}
-									freeSpace={bottle.freeSpace}
-									onClick={() => handleBottleSelect(bottle.id)}
-									selected={selectedBottle === bottle.id}
-									size={Math.min(settings.bottleLength, settings.maxBottleLength)}
-									label={showBottleLabels ? bottle.label || '' : ''}
-									transform={bottleTransforms[globalIndex] || ''}
-									zIndex={movingBottles[globalIndex] ? 20 : 0}
-								/>
-							);
-						})}
-					</div>
-				))}
-			</div>
+
+
+			<BottleContainer
+				bottles={bottles}
+				selectedBottle={selectedBottle}
+				showBottleLabels={showBottleLabels}
+				onBottleSelect={handleBottleSelect}
+			/>
 
 			{showSolver && displaySolution && (
 				// <SolutionDisplay solution={solution} />

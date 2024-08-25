@@ -4,13 +4,13 @@ import { BOTTLE_SCALE } from '../ts/options';
 import { BottleProps } from '../ts/interfaces';
 
 
-function Bottle({ startY, colors, onClick, selected, size, label, transform, zIndex }: BottleProps)  {
-    
+function Bottle({ startY, colors, onClick, selected, size, label }: BottleProps) {
+
     // Starting point of the bottle whithin the SVG
-    const startX = 25; 
+    const startX = 25;
     const colorCellSize = 50;
-    
-    const bottleHeight = label === null ? (size * colorCellSize) + 50 : (size * colorCellSize) + 80 ;
+
+    const bottleHeight = label === null ? (size * colorCellSize) + 50 : (size * colorCellSize) + 80;
     const bottleSelectScale = BOTTLE_SCALE + 0.1;
 
 
@@ -55,20 +55,13 @@ function Bottle({ startY, colors, onClick, selected, size, label, transform, zIn
 
 
         <svg
-            className={`bottle ${selected ? 'selected' : ''}`}
+            className={'bottle'}
             width="100"
             height={bottleHeight} // Dynamically set the height
-            viewBox={`0 0 100 250`} // Dynamically set the viewBox height
+            viewBox={`0 0 100 ${bottleHeight}`} // Dynamically set the viewBox height
             onClick={onClick}
-            style={{
-                transform: `${transform} scale(${selected ? bottleSelectScale : BOTTLE_SCALE})`,
-                zIndex: zIndex
-            }}
+            style={{ transform: `scale(${selected ? bottleSelectScale : BOTTLE_SCALE})` }}
         >
-
-
-
-
 
             {/* Render the color segments */}
             {colors && colors.map((_color, index) => generateColorSegment(startY, index))}
@@ -117,18 +110,18 @@ function Bottle({ startY, colors, onClick, selected, size, label, transform, zIn
             />
 
             <ellipse cx="50" cy="29" rx="25" ry="8" fill="#747474" stroke="white" strokeWidth="3" />
-            <text
-                x="50%"
-                y="90%"
-                fill='white'
-                className='bottle-number'
-                textAnchor="middle"
-                dominantBaseline="middle"
-                style={{ userSelect: 'none', pointerEvents: 'none' }}
-            >
-                {label}
-            </text>
 
+            <text
+                        x={startX + 25}
+                        y={startY + (size - 1) * colorCellSize + 25}
+                        fill='white'
+                        className='bottle-number'
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        style={{ userSelect: 'none', pointerEvents: 'none' }}
+                    >
+                        {label}
+                    </text>
         </svg>
     );
 };

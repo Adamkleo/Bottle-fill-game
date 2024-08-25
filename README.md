@@ -8,6 +8,7 @@
 
 ### Future:
 - [ ] **Feat**: Allow custom level creation
+- [ ] **Feat**: Better random level generation with seed
 - [ ] **Feat**: Show steps taken when using the solver
 - [ ] **Style**: Better speedrun times display
 - [ ] **Style**: Add wavy bottle liquid
@@ -15,4 +16,3 @@
 - [ ] **Style**: Better win animation
 - [ ] **Style**: Filling up animation when starting
 - [ ] **Style**: Better color palettes
-- [ ] **Fix**: Bottle size increasing but svg is not

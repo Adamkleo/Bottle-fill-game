@@ -2,7 +2,7 @@ import './Toolbar.css';
 import { ToolbarProps } from '../ts/interfaces';
 
 
-function Toolbar(props: ToolbarProps) {
+function Toolbar({ buttons, buttonSize }: ToolbarProps) {
 
     const sizeToClass = {
         'small': 'toolbar-small',
@@ -11,10 +11,10 @@ function Toolbar(props: ToolbarProps) {
     }
 
     return (
-        <div className={`toolbar ${sizeToClass[props.buttonSize]}`}>
-            {props.buttons.map((button, index) => (
+        <div className={`toolbar ${sizeToClass[buttonSize]}`}>
+            {buttons.map((button, index) => (
                 <button
-                    className={`${button.className} ${props.buttonSize}`} 
+                    className={`${button.className} ${buttonSize}`} 
                     key={index}
                     onClick={button.onClick}
                     disabled={button.disabled}

@@ -3,11 +3,11 @@ import './SolutionDisplay.css';
 
 
 
-function SolutionDisplay(solution) {
+function SolutionDisplay({ solution }: any) {
     console.log(solution)
     return (
         <div>
-            <a className="game-history-title">Solution</a>
+            <a className="game-solution-header">Solution</a>
         </div>
     );
 }

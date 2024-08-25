@@ -1,14 +1,13 @@
 .bottle {
   transition: transform 0.3s;
   cursor: pointer;
+  z-index: 1;
 }
 
-.bottle.selected {
-  transform: scale(1.1);
-}
+
 
 .bottle-number {
   font-size: 1rem;
   font-weight: bold;
-  pointer-events: none; /* Prevent text from interfering with clicks */
+  pointer-events: none;
 }

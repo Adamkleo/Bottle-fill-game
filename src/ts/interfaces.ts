@@ -35,13 +35,11 @@ export interface BottleProps {
     onClick: () => void;
     selected: boolean;
     size: number;
-    number?: number; 
-    transform: string;
-    zIndex: number;
+    number?: number;
     label: string;
     freeSpace: number;
-  }
-  
+}
+
 export type BottleData = {
     id: number;
     colors: string[];
@@ -53,14 +51,17 @@ export interface ButtonProps {
     label: string;
     onClick: () => void;
     disabled: boolean;
-    className?: string;
+    className: string;
     toggle?: boolean; 
 }
+
 
 export interface ToolbarProps {
     buttons: ButtonProps[];
     buttonSize: 'small' | 'large' | 'medium'; // Define the buttonSize as a prop of the Toolbar
 }
+
+
 
 export type Settings = {
     numBottles: number;
@@ -70,4 +71,11 @@ export type Settings = {
     selectedPalette: number;
     isAnimationsEnabled: boolean;
     isBottleLabelsEnabled: boolean;
-  };
+};
+
+export interface BottleContainerProps {
+    bottles: BottleData[];
+    selectedBottle: number | null;
+    showBottleLabels: boolean;
+    onBottleSelect: (bottleId: number) => void;
+}
