@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { formatTime } from '../ts/utils';
 import './Timer.css';
 
@@ -8,15 +8,16 @@ interface TimerProps {
     isRunning: boolean;
     mode: 'hour' | 'minute' | 'second';
     onTimeUpdate?: (time: number) => void;
+    onClick?: () => void;
 }
 
-function Timer(props: TimerProps) {
+function Timer({isRunning, mode, onTimeUpdate, onClick}: TimerProps) {
     const [time, setTime] = useState(0);
 
     useEffect(() => {
         let interval: number | undefined;
 
-        if (props.isRunning) {
+        if (isRunning) {
             interval = window.setInterval(() => {
                 setTime((time) => time + MS);
             }, MS);
@@ -27,17 +28,17 @@ function Timer(props: TimerProps) {
         return () => {
             if (interval) clearInterval(interval);
         };
-    }, [props.isRunning]);
+    }, [isRunning]);
 
     useEffect(() => {
-        if (props.onTimeUpdate) {
-            props.onTimeUpdate(time);
+        if (onTimeUpdate) {
+            onTimeUpdate(time);
         }
-    }, [time, props.onTimeUpdate]);
+    }, [time, onTimeUpdate]);
 
     return (
         <div>
-            <span className="timer">{formatTime(time, props.mode)}</span>
+            <span onClick={onClick} className="timer">{formatTime(time, mode)}</span>
         </div>
     );
 }

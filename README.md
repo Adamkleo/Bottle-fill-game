@@ -15,3 +15,4 @@
 - [ ] **Style**: Better win animation
 - [ ] **Style**: Filling up animation when starting
 - [ ] **Style**: Better color palettes
+- [ ] **Fix**: Bottle size increasing but svg is not

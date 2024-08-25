@@ -61,7 +61,7 @@ export function getRandomElements(obj: { [key: string]: number }, N: number): st
         } while (elements.length < N);
     } catch (error) {
         console.error('An error occurred while selecting random elements:', error);
-        throw error; 
+        throw error;
     }
 
     return elements;
@@ -84,3 +84,18 @@ export function formatTime(time: number, mode: TimerMode): string {
     }
     return `${seconds}:${milliseconds}`;
 }
+
+
+
+export function calculateNumArrayAvg(timeList: number[], indices?: [number, number]): number {
+    if (indices) {
+        const [i, j] = indices;
+        const selectedTimes = timeList.slice(i, j);
+        const sum = selectedTimes.reduce((acc, time) => acc + time, 0);
+        return selectedTimes.length > 0 ? sum / selectedTimes.length : 0;
+    } else {
+        const sum = timeList.reduce((acc, time) => acc + time, 0);
+        return timeList.length > 0 ? sum / timeList.length : 0;
+    }
+}
+

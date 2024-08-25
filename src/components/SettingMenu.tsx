@@ -1,20 +1,13 @@
-import React, { useEffect, useState } from 'react';
 import './SettingMenu.css';
+import React, { useEffect, useState } from 'react';
 import { settings, MAX_EMPTY_BOTTLES, MAX_BOTTLES, MIN_BOTTLES, MIN_BOTTLE_LENGTH, MAX_BOTTLE_LENGTH, COLOR_PALETTES_LENGTH, MIN_EMPTY_BOTTLES } from '../ts/options';
 import SettingItem from './SettingItem';
 import Toolbar from './Toolbar';
+import { SettingsMenuProps } from '../ts/interfaces';
 
-interface SettingsMenuProps {
-  isOpen: boolean;
-  onClose: (settingModified: boolean) => void;
-  handleSpeedrun: (isActive: boolean) => void;
-  handleSolver: (isActive: boolean) => void;
-  handleAnimations: (isActive: boolean) => void;
-  handleBottleLabels: (isActive: boolean) => void;
-  buttonsDisabled?: boolean;
-}
 
-function SettingMenu(props: SettingsMenuProps) {
+function SettingMenu({ isOpen, onClose, handleSpeedrun, handleSolver,
+  handleAnimations, handleBottleLabels, buttonsDisabled }: SettingsMenuProps) {
   const [, setLocalSettings] = useState(settings);
   const [tempSettings, setTempSettings] = useState(settings);
   const [settingModified, setSettingModified] = useState(false);
@@ -27,7 +20,7 @@ function SettingMenu(props: SettingsMenuProps) {
     setSettingModified(false);
 
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape' && props.isOpen) {
+      if (event.key === 'Escape' && isOpen) {
         handleClose(false);
       }
     };
@@ -45,7 +38,7 @@ function SettingMenu(props: SettingsMenuProps) {
       document.removeEventListener('click', handleClick);
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [props.isOpen, props.onClose]);
+  }, [isOpen, onClose]);
 
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
     const { name, value, type, checked } = event.target;
@@ -65,7 +58,7 @@ function SettingMenu(props: SettingsMenuProps) {
     } else {
       setSettingModified(false);
     }
-    props.onClose(settingModified);
+    onClose(settingModified);
   }
 
   function validateSettings() {
@@ -99,16 +92,16 @@ function SettingMenu(props: SettingsMenuProps) {
     const newSpeedRunState = !isSpeedRunEnabled;
     setIsSpeedRunEnabled(newSpeedRunState);
     setIsSolverEnabled(false); // Disable solver mode when speedrun is enabled
-    props.handleSpeedrun(newSpeedRunState);
-    props.handleSolver(false); // Make sure solver is off
+    handleSpeedrun(newSpeedRunState);
+    handleSolver(false); // Make sure solver is off
   }
 
   function toggleSolver() {
     const newSolverState = !isSolverEnabled;
     setIsSolverEnabled(newSolverState);
     setIsSpeedRunEnabled(false); // Disable speedrun mode when solver is enabled
-    props.handleSolver(newSolverState);
-    props.handleSpeedrun(false); // Make sure speedrun is off
+    handleSolver(newSolverState);
+    handleSpeedrun(false); // Make sure speedrun is off
   }
 
   const settingButtons = [
@@ -133,80 +126,72 @@ function SettingMenu(props: SettingsMenuProps) {
     { label: 'Cancel', onClick: () => handleClose(false), disabled: false, className: 'red' },
   ];
 
+
+
+  const handleCheckboxChange = (setter: React.Dispatch<React.SetStateAction<boolean>>, handler: (isChecked: boolean) => void) => {
+    return (event: React.ChangeEvent<HTMLInputElement>) => {
+      const isChecked = event.target.checked;
+      setter(isChecked);
+      handler(isChecked);
+    };
+  };
+
+
+  const numberSettingItems = [
+    { label: "Bottles", id: "numBottles", name: "numBottles", value: tempSettings.numBottles, min: MIN_BOTTLES(), max: MAX_BOTTLES, disabled: buttonsDisabled },
+    { label: "Bottle Size", id: "bottleLength", name: "bottleLength", value: tempSettings.bottleLength, min: MIN_BOTTLE_LENGTH, max: MAX_BOTTLE_LENGTH, disabled: buttonsDisabled },
+    { label: "Empty Bottles", id: "emptyBottles", name: "emptyBottles", value: tempSettings.emptyBottles, min: MIN_EMPTY_BOTTLES, max: MAX_EMPTY_BOTTLES(), disabled: buttonsDisabled },
+    { label: "Color Palette", id: "selectedPalette", name: "selectedPalette", value: tempSettings.selectedPalette, min: 1, max: COLOR_PALETTES_LENGTH, disabled: buttonsDisabled },
+  ]
+
+  const checkboxSettingItems = [
+    {
+      label: "Animations",
+      id: "isAnimationsEnabled",
+      name: "isAnimationsEnabled",
+      value: isAnimationsEnabled,
+      onChange: handleCheckboxChange(setIsAnimationsEnabled, handleAnimations),
+    },
+    {
+      label: "Bottle Labels",
+      id: "isBottleLabelsEnabled",
+      name: "isBottleLabelsEnabled",
+      value: isBottleLabelsEnabled,
+      onChange: handleCheckboxChange(setIsBottleLabelsEnabled, handleBottleLabels),
+    },
+  ];
+
+
   return (
-    <div className={`settings-menu-overlay ${props.isOpen ? 'open' : ''}`}>
+    <div className={`settings-menu-overlay ${isOpen ? 'open' : ''}`}>
       <div className="settings-menu">
         <div className="settings-menu-body">
-          <SettingItem
-            type="number"
-            label="Bottles"
-            id="numBottles"
-            name="numBottles"
-            value={tempSettings.numBottles}
-            onChange={handleInputChange}
-            min={Math.max(MIN_BOTTLES(), tempSettings.emptyBottles + 2)}
-            max={MAX_BOTTLES}
-            disabled={props.buttonsDisabled}
-          />
-          <SettingItem
-            type="number"
-            label="Bottle Size"
-            id="bottleLength"
-            name="bottleLength"
-            value={tempSettings.bottleLength}
-            onChange={handleInputChange}
-            min={MIN_BOTTLE_LENGTH}
-            max={MAX_BOTTLE_LENGTH}
-            disabled={props.buttonsDisabled}
-          />
-          <SettingItem
-            type="number"
-            label="Empty Bottles"
-            id="emptyBottles"
-            name="emptyBottles"
-            value={tempSettings.emptyBottles}
-            onChange={handleInputChange}
-            min={MIN_EMPTY_BOTTLES}
-            max={Math.min(MAX_EMPTY_BOTTLES(), tempSettings.numBottles - 2)}
-            disabled={props.buttonsDisabled}
-          />
-          <SettingItem
-            type="number"
-            label="Color Palette"
-            id="selectedPalette"
-            name="selectedPalette"
-            value={tempSettings.selectedPalette}
-            onChange={handleInputChange}
-            min={1}
-            max={COLOR_PALETTES_LENGTH}
-            disabled={props.buttonsDisabled}
-          />
-          <SettingItem
-            type="checkbox"
-            label="Animations"
-            id="isAnimationsEnabled"
-            name="isAnimationsEnabled"
-            value={isAnimationsEnabled}
-            onChange={(event) => {
-              const isChecked = event.target.checked;
-              setIsAnimationsEnabled(isChecked);
-              props.handleAnimations(isChecked);
-            }}
+          {numberSettingItems.map((settingItem, index) => (
+            <SettingItem
+              key={index}
+              type="number"
+              label={settingItem.label}
+              id={settingItem.id}
+              name={settingItem.name}
+              value={settingItem.value}
+              onChange={handleInputChange}
+              min={settingItem.min}
+              max={settingItem.max}
+              disabled={settingItem.disabled}
+            />
+          ))}
 
-          />
-          <SettingItem
-            type="checkbox"
-            label="Bottle Labels"
-            id="isBottleLabelsEnabled"
-            name="isBottleLabelsEnabled"
-            value={isBottleLabelsEnabled}
-            onChange={(event) => {
-              const isChecked = event.target.checked;
-              setIsBottleLabelsEnabled(isChecked);
-              props.handleBottleLabels(isChecked);
-            }}
-            
-          />
+          {checkboxSettingItems.map((settingItem, index) => (
+            <SettingItem
+              key={index}
+              type="checkbox"
+              label={settingItem.label}
+              id={settingItem.id}
+              name={settingItem.name}
+              value={settingItem.value}
+              onChange={settingItem.onChange}
+            />
+          ))}
 
           <Toolbar buttons={settingButtons} buttonSize='small' />
           <Toolbar buttons={menuButtons} buttonSize='small' />

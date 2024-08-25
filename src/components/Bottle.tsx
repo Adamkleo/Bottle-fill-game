@@ -1,27 +1,20 @@
-import React from 'react';
+import { ReactElement } from 'react';
 import './Bottle.css';
 import { BOTTLE_SCALE } from '../ts/options';
+import { BottleProps } from '../ts/interfaces';
 
 
-const Bottle = ({ startY, colors, onClick, selected, size, number, transform, zIndex }) => {
-    const startX = 25; // Center the bottle horizontally within the 100px wide area
+function Bottle({ startY, colors, onClick, selected, size, label, transform, zIndex }: BottleProps)  {
+    
+    // Starting point of the bottle whithin the SVG
+    const startX = 25; 
     const colorCellSize = 50;
-    const bottleHeight = number != null ? (size * colorCellSize) + 80 : (size * colorCellSize) + 50;
+    
+    const bottleHeight = label === null ? (size * colorCellSize) + 50 : (size * colorCellSize) + 80 ;
     const bottleSelectScale = BOTTLE_SCALE + 0.1;
-    function computePadding(size) {
-        const paddingMap = {
-            2: 10,
-            3: 7,
-            4: 3,
-            5: -2,
-            6: -8,
-            7: -12
-        };
-        return paddingMap[size] || 0; // Return 0 or a default value if the size is not in the map
-    }
 
-    function generateColorSegment(startY, index) {
-        const startX = 25; // Assuming startX is constant
+
+    function generateColorSegment(startY: number, index: number): ReactElement {
         const colorCellSize = 50; // Assuming this is a constant for cell size
 
         const yOffset = index == 0 ? (size - 1) * colorCellSize : (size - 1 - index) * colorCellSize;
@@ -78,7 +71,7 @@ const Bottle = ({ startY, colors, onClick, selected, size, number, transform, zI
 
 
             {/* Render the color segments */}
-            {colors && colors.map((color, index) => generateColorSegment(startY, index))}
+            {colors && colors.map((_color, index) => generateColorSegment(startY, index))}
 
             {/* Render the first bottle shadow */}
             <path
@@ -133,7 +126,7 @@ const Bottle = ({ startY, colors, onClick, selected, size, number, transform, zI
                 dominantBaseline="middle"
                 style={{ userSelect: 'none', pointerEvents: 'none' }}
             >
-                {number}
+                {label}
             </text>
 
         </svg>

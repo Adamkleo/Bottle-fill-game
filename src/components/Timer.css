@@ -1,16 +1,17 @@
 
 .timer {
-    font-family: 'VT323', monospace; /* Monospace font */
-    font-size: 3rem; /* Large font size */
-    font-weight: bold; /* Bold text */
-    color: #ffffff; /* Darker color for the text */
-    letter-spacing: 2px; /* Spacing between characters for a clearer look */
-    display: inline-block; /* Keeps the timer box tight around the text */
-    margin-bottom: 10px; /* Adds some margin around the timer */
+    font-family: 'VT323', monospace;
+    font-size: 3rem;
+    font-weight: bold;
+    color: #ffffff;
+    letter-spacing: 2px; 
+    display: inline-block;
+    margin-bottom: 10px;
     color: #ffffff;
     letter-spacing: 4px;
     text-shadow: 3px 3px 0px rgba(231, 3, 247, 0.5); 
     text-transform: uppercase; 
+    cursor: pointer;
 }
 
 

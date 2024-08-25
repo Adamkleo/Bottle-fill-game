@@ -1,17 +1,5 @@
 import './Toolbar.css';
-
-interface ButtonProps {
-    label: string;
-    onClick: () => void;
-    disabled: boolean;
-    className?: string;
-    toggle?: boolean; 
-}
-
-interface ToolbarProps {
-    buttons: ButtonProps[];
-    buttonSize: 'small' | 'large' | 'medium'; // Define the buttonSize as a prop of the Toolbar
-}
+import { ToolbarProps } from '../ts/interfaces';
 
 
 function Toolbar(props: ToolbarProps) {
@@ -26,7 +14,7 @@ function Toolbar(props: ToolbarProps) {
         <div className={`toolbar ${sizeToClass[props.buttonSize]}`}>
             {props.buttons.map((button, index) => (
                 <button
-                    className={`${button.className} ${props.buttonSize}`}  // Add buttonSize class to each button
+                    className={`${button.className} ${props.buttonSize}`} 
                     key={index}
                     onClick={button.onClick}
                     disabled={button.disabled}

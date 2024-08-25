@@ -1,8 +1,5 @@
 
 export interface KeyActions {
-    moveUp: () => void;
-    moveDown: () => void;
-    confirm: () => void;
     escape: () => void;
     one: () => void;
     two: () => void;
@@ -19,19 +16,12 @@ export interface KeyActions {
     y: () => void;
     u: () => void;
     z: () => void;
+
+    d: () => void;
 }
 
 export function handleKeyPress(event: KeyboardEvent, actions: KeyActions) {
     switch (event.key) {
-        case 'ArrowUp':
-            actions.moveUp();
-            break;
-        case 'ArrowDown':
-            actions.moveDown();
-            break;
-        case 'Enter':
-            actions.confirm();
-            break;
         case 'Escape':
             actions.escape();
             break;
@@ -79,6 +69,9 @@ export function handleKeyPress(event: KeyboardEvent, actions: KeyActions) {
             break;
         case 'z':
             actions.z();
+            break;
+        case 'd':
+            actions.d();
             break;
         default:
             break;

@@ -1,17 +1,5 @@
-import React from 'react';
 import './SettingItem.css';
-
-interface SettingItemProps {
-  label: string;
-  id: string;
-  name: string;
-  value: number | string | boolean;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  min?: number;
-  max?: number;
-  type: 'number' | 'checkbox';
-  disabled?: boolean;
-}
+import { SettingItemProps } from '../ts/interfaces';
 
 function SettingItem(props: SettingItemProps) {
 
@@ -24,8 +12,8 @@ function SettingItem(props: SettingItemProps) {
         type={props.type}
         id={props.id}
         name={props.name}
-        value={props.type === 'checkbox' ? undefined : String(props.value)}  
-        checked={props.type === 'checkbox' ? Boolean(props.value) : undefined}
+        value={props.type === 'checkbox' ? undefined : String(props.value)}  // Convert to string 
+        checked={props.type === 'checkbox' ? Boolean(props.value) : undefined} // Handle checked for checkbox
         onChange={props.onChange}
         min={props.type === 'number' ? props.min : undefined}
         max={props.type === 'number' ? props.max : undefined}
