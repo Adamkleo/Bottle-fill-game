@@ -2,28 +2,47 @@ import { useState, useEffect } from 'react';
 import './App.css';
 
 import Toolbar from './components/Toolbar';
-import SettingMenu from './components/SettingMenu';
+import Menu from './components/Menu';
 import GameHistory from './components/GameHistory';
 import Timer from './components/Timer';
 import BottleContainer from './components/BottleContainer';
+import Button from './components/Button';
 
-import { getNRandomColors, getRandomElements } from './ts/utils';
+import { getNRandomColors } from './ts/utils';
 import { Solver } from './solver/Solver';
-import { settings, NON_EMPTY_BOTTLES, COLOR_PALETTES, BOTTLE_KEY_BINDS } from './ts/options';
+import { settings, NON_EMPTY_BOTTLES, COLOR_PALETTES, MIN_BOTTLES, MAX_BOTTLES, MIN_BOTTLE_LENGTH, MAX_BOTTLE_LENGTH, MIN_EMPTY_BOTTLES, MAX_EMPTY_BOTTLES, COLOR_PALETTES_LENGTH } from './ts/options';
 import { KeyActions, handleKeyPress } from './ts/keyHandlers';
-import { GameStatistics, BottleData, ButtonProps } from './ts/interfaces';
+import { GameStatistics, BottleData } from './ts/interfaces';
 
-import { isWin, makeMove } from './ts/gameLogic';
+import { isWin, makeMove, generateEmptyState, generateRandomState } from './ts/gameLogic';
+import SettingItem from './components/SettingItem';
+import { useSettings } from './context/SettingsContext';
 
 
 
 function App() {
 
-	const numColorsNeeded = NON_EMPTY_BOTTLES();
+	const {
+		animations,
+		labels,
+		numBottles,
+		bottleLength,
+		emptyBottles,
+		selectedPalette,
+		seed,
+		setAnimations,
+		setLabels,
+		setNumBottles,
+		setBottleLength,
+		setEmptyBottles,
+		setSelectedPalette,
+		setSeed,
+	} = useSettings();
+
 
 	const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 	const [selectedBottle, setSelectedBottle] = useState<number | null>(null);
-	const [bottles, setBottles] = useState<BottleData[]>(generateInitialState());
+	const [bottles, setBottles] = useState<BottleData[]>(generateEmptyState());
 	const [states, setStates] = useState<BottleData[][]>([bottles]);
 	const [buttonsDisabled, setButtonsDisabled] = useState<boolean>(false);
 	const [showSpeedrunMode, setShowSpeedrunMode] = useState<boolean>(false);
@@ -31,13 +50,15 @@ function App() {
 	const [speedrunActive, setSpeedrunActive] = useState<boolean>(false);
 	const [currentTime, setCurrentTime] = useState<number>(0);
 	const [undoButtonDisabled, setUndoButtonDisabled] = useState<boolean>(false);
-	const [currentGame, setCurrentGame] = useState<BottleData[]>([]);
-	const [, setBottleAnimations] = useState<boolean>(settings.isAnimationsEnabled);
-	const [showBottleLabels, setShowBottleLabels] = useState<boolean>(settings.isBottleLabelsEnabled);
+	const [currentGame, setCurrentGame] = useState<BottleData[]>(generateEmptyState());
+
 	const [gameHistory, setGameHistory] = useState<GameStatistics[]>([]);
 	const [showGameHistory, setShowGameHistory] = useState<boolean>(false);
 	const [displaySolution, setDisplaySolution] = useState<boolean>(false);
 	const [, setSolutionSteps] = useState<BottleData[][]>([]);
+
+	const [seedInput, setSeedInput] = useState<string>(seed);
+	const [settingModified, setSettingModified] = useState<boolean>(false);
 
 	let solver = new Solver();
 
@@ -67,8 +88,9 @@ function App() {
 	};
 
 	function debug() {
-		resetGame()
+		console.log(seed)
 	}
+
 
 	useEffect(() => {
 		const keyListener = (event: KeyboardEvent) => handleKeyPress(event, actions);
@@ -91,32 +113,8 @@ function App() {
 
 	useEffect(() => {
 		if (!showSpeedrunMode) setSpeedrunActive(false);
-		if (showSpeedrunMode) setBottles(generateInitialState());
+		if (showSpeedrunMode) setBottles(generateEmptyState());
 	}, [showSpeedrunMode]);
-
-
-
-	function generateInitialState(): BottleData[] {
-		let bottles = [];
-		for (let i = 0; i < settings.numBottles; i++) {
-			const bottle: BottleData = { id: i, colors: [], freeSpace: numColorsNeeded, label: BOTTLE_KEY_BINDS[i] };
-			bottles.push(bottle);
-		}
-		return bottles
-	}
-
-	function generateRandomState(palette: { [key: string]: number; }): BottleData[] {
-		let bottles = [];
-		for (let i = 0; i < settings.numBottles; i++) {
-			if (i < NON_EMPTY_BOTTLES()) {
-				bottles.push({ id: i, colors: getRandomElements(palette, settings.bottleLength), freeSpace: 0, label: BOTTLE_KEY_BINDS[i] });
-			} else {
-				bottles.push({ id: i, colors: [], freeSpace: settings.bottleLength, label: BOTTLE_KEY_BINDS[i] });
-			}
-		}
-		return isWin(bottles) ? generateRandomState(palette) : bottles;;
-	}
-
 
 
 	function handleWin(): void {
@@ -260,33 +258,23 @@ function App() {
 	}
 
 	const endSpeedrun = (): void => {
-		setBottles(generateInitialState)
+		setBottles(generateEmptyState)
 		setStates([])
 		setSpeedrunActive(false);
 	}
 
-	const gameButtons: ButtonProps[] = [
-		{ label: 'Undo', onClick: undo, disabled: undoButtonDisabled, className: 'red' },
-		{ label: 'New Game', onClick: resetGame, disabled: buttonsDisabled, className: 'green' },
-	];
 
-	const speedRunButtons: ButtonProps[] = [
-		{ label: 'End', onClick: endSpeedrun, disabled: !speedrunActive, className: 'red' },
-		{ label: 'Undo', onClick: undo, disabled: undoButtonDisabled, className: 'red' },
-		{ label: 'New Game', onClick: startSpeedrun, disabled: speedrunActive, className: 'green' },
-	];
-
-	const solverButtons: ButtonProps[] = [
-		{ label: 'Solve', onClick: solveGame, disabled: buttonsDisabled, className: 'blue' },
-	];
-
-	const handleCloseMenu = (settingModified: boolean): void => {
+	const handleCloseMenu = (): void => {
 		setIsMenuOpen(false);
 		setButtonsDisabled(false);
+
 		if (settingModified) {
-			setBottles(generateInitialState());
+			setBottles(generateEmptyState());
+			setSelectedBottle(null);
 		}
-		setSelectedBottle(null);
+
+		setSettingModified(false);
+
 	}
 
 	const handleTimerClick = (): void => {
@@ -297,60 +285,168 @@ function App() {
 		setCurrentTime(time);
 	}
 
-	function handleRestart(): void {
+	const handleRestart = (): void => {
 		if (currentGame === null) return;
 		setBottles(currentGame);
 		setStates([currentGame]);
 	}
+
+
+	const checkboxSettingItems = [
+		{
+			label: "Animations",
+			id: "isAnimationsEnabled",
+			value: animations,
+			onChange: (event: React.ChangeEvent<HTMLInputElement>) => setAnimations(event.target.checked),
+		},
+		{
+			label: "Bottle Labels",
+			id: "isBottleLabelsEnabled",
+			value: labels,
+			onChange: (event: React.ChangeEvent<HTMLInputElement>) => setLabels(event.target.checked),
+		},
+	];
+
+
+
+	const numberSettingItems = [
+		{ label: "Bottles", id: "numBottles", value: numBottles, min: MIN_BOTTLES(), max: MAX_BOTTLES },
+		{ label: "Bottle Size", id: "bottleLength", value: bottleLength, min: MIN_BOTTLE_LENGTH, max: MAX_BOTTLE_LENGTH },
+		{ label: "Empty Bottles", id: "emptyBottles", value: emptyBottles, min: MIN_EMPTY_BOTTLES, max: MAX_EMPTY_BOTTLES() },
+		{ label: "Color Palette", id: "selectedPalette", value: selectedPalette, min: 1, max: COLOR_PALETTES_LENGTH },
+	];
+
+	const handleNumberSettingChange = (id: string, value: number) => {
+		switch (id) {
+			case 'numBottles':
+				setNumBottles(value);
+				break;
+			case 'bottleLength':
+				setBottleLength(value);
+				break;
+			case 'emptyBottles':
+				setEmptyBottles(value);
+				break;
+			case 'selectedPalette':
+				setSelectedPalette(value);
+				break;
+			default:
+				break;
+		}
+		setSettingModified(true);
+	};
+
+	function handleSeedChange(event: React.ChangeEvent<HTMLInputElement>) {
+		const value = event.target.value;
+		const regex = /^[0-9]*$/;
+		if (regex.test(value) && value.length <= 16) {
+		  setSeedInput(value);
+		  setSettingModified(true);
+		}
+	  }
 
 	return (
 		<>
 			<img src="src/assets/settings-w.png" alt="settings" className="settings-logo" onClick={() => !buttonsDisabled && toggleMenu()} />
 			<img src="src/assets/restart-w.png" className='restart-logo' alt="restart" onClick={() => !buttonsDisabled && handleRestart()} />
 
+
 			{/* Conditionally render the toolbar based on the active mode */}
 			{(!showSpeedrunMode && !showSolver) && (
-				<Toolbar buttons={gameButtons} buttonSize="medium" />
+				<Toolbar>
+					<Button label="Undo" onClick={undo} disabled={undoButtonDisabled} className="red" size="medium" />
+					<Button label="New Game" onClick={resetGame} disabled={buttonsDisabled} className="green" size="medium" />
+				</Toolbar>
 			)}
 
 			{showSpeedrunMode && (
 				<>
 					<Timer isRunning={speedrunActive} mode="minute" onTimeUpdate={handleTimeUpdate} onClick={handleTimerClick} />
-					<Toolbar buttons={speedRunButtons} buttonSize="medium" />
+					<Toolbar>
+						<Button label="End" onClick={endSpeedrun} disabled={!speedrunActive} className="red" size="medium" />
+						<Button label="Undo" onClick={undo} disabled={undoButtonDisabled} className="red" size="medium" />
+						<Button label="New Game" onClick={startSpeedrun} disabled={speedrunActive} className="green" size="medium" />
+					</Toolbar>
 				</>
 			)}
 
 			{showSolver && (
-				<Toolbar buttons={solverButtons} buttonSize="medium" />
+				<Toolbar>
+					<Button label="Solve" onClick={solveGame} disabled={buttonsDisabled} className="blue" size="medium" />
+				</Toolbar>
 			)}
 
-			<SettingMenu
-				isOpen={isMenuOpen}
-				onClose={handleCloseMenu}
-				handleSpeedrun={(isActive) => {
-					setShowSpeedrunMode(isActive);
-					if (isActive) {
-						setShowSolver(false);
-					}
-				}}
-				handleSolver={(isActive) => {
-					setShowSolver(isActive);
-					if (isActive) {
-						setShowSpeedrunMode(false);
-					}
-				}}
-				handleAnimations={(isActive) => setBottleAnimations(isActive)}
-				handleBottleLabels={(isActive) => setShowBottleLabels(isActive)}
-				buttonsDisabled={showSpeedrunMode || showSolver}
-			/>
 
 
+
+
+
+			<Menu isOpen={isMenuOpen} onClose={handleCloseMenu}>
+				{numberSettingItems.map((settingItem, index) => (
+					<SettingItem
+						key={index}
+						type="number"
+						label={settingItem.label}
+						id={settingItem.id}
+						value={settingItem.value}
+						onChange={(event) => handleNumberSettingChange(settingItem.id, parseInt(event.target.value))}
+						min={settingItem.min}
+						max={settingItem.max}
+					/>
+				))}
+				{checkboxSettingItems.map((settingItem, index) => (
+					<SettingItem
+						key={index}
+						type="checkbox"
+						label={settingItem.label}
+						id={settingItem.id}
+						value={settingItem.value}
+						onChange={settingItem.onChange}
+					/>
+				))}
+
+				<a className='seed-label'>Seed</a>
+				<div className='seed-container'>
+					<SettingItem
+						type="text"
+						label=""
+						id="seed"
+						value={seedInput}
+						onChange={handleSeedChange}
+					/>
+					<button className='confirm-button' onClick={() => setSeed(seedInput)}>Set</button>
+				</div>
+
+
+				<Toolbar>
+					<Button
+						size='small'
+						label='SpeedRun'
+						onClick={() => {
+							setShowSolver(false)
+							setShowSpeedrunMode(!showSpeedrunMode)
+						}}
+						disabled={false}
+						className={showSpeedrunMode ? 'blue' : ''}
+					/>
+					<Button
+						size='small'
+						label='Solver'
+						onClick={() => {
+							setShowSpeedrunMode(false)
+							setShowSolver(!showSolver)
+						}}
+						disabled={false}
+						className={showSolver ? 'blue' : ''}
+					/>
+				</Toolbar>
+			</Menu>
 
 
 			<BottleContainer
 				bottles={bottles}
 				selectedBottle={selectedBottle}
-				showBottleLabels={showBottleLabels}
+				showBottleLabels={labels}
 				onBottleSelect={handleBottleSelect}
 			/>
 

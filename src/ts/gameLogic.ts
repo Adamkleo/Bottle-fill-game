@@ -1,6 +1,7 @@
 import { BottleData } from "./interfaces";
-import { settings, NON_EMPTY_BOTTLES } from "./options";
+import { settings, NON_EMPTY_BOTTLES, BOTTLE_KEY_BINDS } from "./options";
 import { allEqual } from "./utils";
+import { getRandomElements } from "./utils";
 
 export function isWin(bottles: BottleData[]): boolean {
 
@@ -41,8 +42,8 @@ export function isValidMove(bottles: BottleData[], fromBottleIndex: number, toBo
 }
 
 
-export function makeMove(bottles: BottleData[], fromBottleIndex: number, toBottleIndex: number): BottleData[] | null {
-    if (!isValidMove(bottles, fromBottleIndex, toBottleIndex)) {
+export function makeMove(bottles: BottleData[], fromBottleIndex: number, toBottleIndex: number, force: boolean = false): BottleData[] | null {
+    if (!force && !isValidMove(bottles, fromBottleIndex, toBottleIndex)) {
         return null;
     }
 
@@ -76,4 +77,30 @@ export function makeMove(bottles: BottleData[], fromBottleIndex: number, toBottl
 
     return bottlesClone;
 }
+
+
+
+export function generateEmptyState(): BottleData[] {
+    const bottles = [];
+    for (let i = 0; i < settings.numBottles; i++) {
+        const bottle: BottleData = { id: i, colors: [], freeSpace: settings.bottleLength, label: BOTTLE_KEY_BINDS[i] };
+        bottles.push(bottle);
+    }
+    return bottles
+}
+
+export function generateRandomState(palette: { [key: string]: number; }): BottleData[] {
+    const bottles = [];
+    for (let i = 0; i < settings.numBottles; i++) {
+        if (i < NON_EMPTY_BOTTLES()) {
+            bottles.push({ id: i, colors: getRandomElements(palette, settings.bottleLength), freeSpace: 0, label: BOTTLE_KEY_BINDS[i] });
+        } else {
+            bottles.push({ id: i, colors: [], freeSpace: settings.bottleLength, label: BOTTLE_KEY_BINDS[i] });
+        }
+    }
+    return isWin(bottles) ? generateRandomState(palette) : bottles;
+}
+
+
+
 

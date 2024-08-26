@@ -1,22 +1,22 @@
 export interface SettingsMenuProps {
     isOpen: boolean;
-    onClose: (settingModified: boolean) => void;
+    onClose: () => void;
     handleSpeedrun: (isActive: boolean) => void;
     handleSolver: (isActive: boolean) => void;
     handleAnimations: (isActive: boolean) => void;
     handleBottleLabels: (isActive: boolean) => void;
+    handleSeedChange: (seed: number) => void;
     buttonsDisabled?: boolean;
 }
 
 export interface SettingItemProps {
     label: string;
     id: string;
-    name: string;
     value: number | string | boolean;
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     min?: number;
     max?: number;
-    type: 'number' | 'checkbox';
+    type: 'number' | 'checkbox' | 'text';
     disabled?: boolean;
 }
 
@@ -47,21 +47,6 @@ export type BottleData = {
     label?: string;
 }
 
-export interface ButtonProps {
-    label: string;
-    onClick: () => void;
-    disabled: boolean;
-    className: string;
-    toggle?: boolean; 
-}
-
-
-export interface ToolbarProps {
-    buttons: ButtonProps[];
-    buttonSize: 'small' | 'large' | 'medium'; // Define the buttonSize as a prop of the Toolbar
-}
-
-
 
 export type Settings = {
     numBottles: number;
@@ -69,8 +54,9 @@ export type Settings = {
     bottleLength: number;
     maxBottleLength: number;
     selectedPalette: number;
-    isAnimationsEnabled: boolean;
-    isBottleLabelsEnabled: boolean;
+    seed: string;
+    animations: boolean;
+    labels: boolean;
 };
 
 export interface BottleContainerProps {
@@ -78,4 +64,12 @@ export interface BottleContainerProps {
     selectedBottle: number | null;
     showBottleLabels: boolean;
     onBottleSelect: (bottleId: number) => void;
+}
+
+export interface ButtonProps {
+    label: string,
+    className: string,
+    size: string,
+    onClick: () => void;
+    disabled: boolean;
 }

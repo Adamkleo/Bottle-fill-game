@@ -4,13 +4,12 @@
 import { Settings } from "./interfaces";
 
 export const settings: Settings = {
-  numBottles: 8,
+  numBottles: 12,
   emptyBottles: 2,
   bottleLength: 4,
   maxBottleLength: 8,
   selectedPalette: 1,
-  isAnimationsEnabled: false,
-  isBottleLabelsEnabled: false,
+  seed: '0'
 };
 
 export const MIN_EMPTY_BOTTLES: number = 2;

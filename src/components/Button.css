@@ -1,0 +1,80 @@
+@import url(https://fonts.googleapis.com/css?family=VT323);
+
+button {
+    background: #7C7C7C;
+    border-bottom: 6px inset rgba(0, 0, 0, 0.5);
+    border-left: 6px inset rgba(0, 0, 0, 0.5);
+    border-right: 6px inset rgba(255, 255, 255, 0.5);
+    border-top: 6px inset rgba(255, 255, 255, 0.5);
+    box-sizing: border-box;
+    color: white;
+    cursor: pointer;
+    display: inline-block;
+    font-family: 'VT323', monospace;
+    text-transform: uppercase;
+    transition: background 0.3s ease;
+}
+
+button:focus,
+button:hover {
+    background: #BCBCBC;
+}
+
+button.red {
+    background: #881400;
+}
+
+button.red:focus,
+button.red:hover {
+    background: #A81000;
+}
+
+button.green {
+    background: #005800;
+}
+
+button.green:focus,
+button.green:hover {
+    background: #006800;
+}
+
+button.blue {
+    background: #0000BC;
+}
+
+button.blue:focus,
+button.blue:hover {
+    background: #0000FC;
+}
+
+button:disabled {
+    background: #7C7C7C;
+    cursor: not-allowed;
+}
+
+button:disabled:hover {
+    background: #7C7C7C;
+}
+
+
+
+.large {
+    font-size: 2.2rem;
+    min-width: 200px;
+    padding: 0.5rem;
+    margin: 1rem;
+}
+
+.medium {
+    font-size: 1.6rem;
+    min-width: 120px;
+    padding: 0.3rem;
+    margin: 0.5rem;
+}
+
+.small {
+    font-size: 1.3rem;
+    min-width: 100px;
+    padding: 0.3rem;
+    margin: 0.2rem;
+}

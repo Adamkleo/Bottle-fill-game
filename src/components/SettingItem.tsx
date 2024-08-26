@@ -1,24 +1,31 @@
 import './SettingItem.css';
 import { SettingItemProps } from '../ts/interfaces';
 
-function SettingItem(props: SettingItemProps) {
+function SettingItem({ label, id, value, onChange, min, max, type, disabled }: SettingItemProps) {
 
-  let inputClassName = props.type === 'checkbox' ? 'setting-input-checkbox' : 'setting-input-number';
+  // Determine the appropriate class name for the input
+  let inputClassName = 'setting-input';
+  if (type === 'checkbox') {
+    inputClassName = 'setting-input-checkbox';
+  } else if (type === 'number') {
+    inputClassName = 'setting-input-number';
+  } else if (type === 'text') {
+    inputClassName = 'setting-input-text'; 
+  }
 
   return (
     <div className="setting-item">
-      <label htmlFor={props.id} className="setting-label">{props.label}</label>
+      <label htmlFor={id} className="setting-label">{label}</label>
       <input
-        type={props.type}
-        id={props.id}
-        name={props.name}
-        value={props.type === 'checkbox' ? undefined : String(props.value)}  // Convert to string 
-        checked={props.type === 'checkbox' ? Boolean(props.value) : undefined} // Handle checked for checkbox
-        onChange={props.onChange}
-        min={props.type === 'number' ? props.min : undefined}
-        max={props.type === 'number' ? props.max : undefined}
+        type={type}
+        id={id}
+        value={type === 'checkbox' ? undefined : String(value)} 
+        checked={type === 'checkbox' ? Boolean(value) : undefined} 
+        onChange={onChange}
+        min={type === 'number' ? min : undefined}
+        max={type === 'number' ? max : undefined}
         className={inputClassName}
-        disabled={props.disabled}
+        disabled={disabled}
       />
     </div>
   );

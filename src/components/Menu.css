@@ -1,4 +1,4 @@
-.settings-menu-overlay {
+.menu-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -14,13 +14,13 @@
   z-index: 1000;
 }
 
-.settings-menu-overlay.open {
+.menu-overlay.open {
   opacity: 1;
   pointer-events: all;
 }
 
-.settings-menu {
-  background: #7C7C7C;  
+.menu {
+  background: #7C7C7C;
   border-bottom: 6px inset rgba(0, 0, 0, 0.5);
   border-left: 6px inset rgba(0, 0, 0, 0.5);
   border-right: 6px inset rgba(255, 255, 255, 0.5);
@@ -33,7 +33,7 @@
   position: relative;
 }
 
-.settings-menu::before {
+.menu::before {
   content: '';
   position: absolute;
   top: -15px;
@@ -42,9 +42,39 @@
   bottom: -15px;
   z-index: -1;
   border-radius: 12px;
-   
+
   filter: blur(15px);
   opacity: 1;
 }
 
 
+.confirm-button {
+  background: #333333;
+  border: 2px solid #555555;
+  border-radius: 3px;
+  color: #ffffff;
+  cursor: pointer;
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  margin-left: 5px;
+  padding: 6px 8px;
+  height: 36px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.seed-label {
+  font-family: 'VT323', monospace;
+  font-size: 22px;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  text-transform: uppercase;
+}
+
+.seed-container {
+  justify-content: center;
+  margin-top: 5px;
+  display: flex;
+  margin-bottom: 10px;
+}

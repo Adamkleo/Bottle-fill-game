@@ -1,14 +1,21 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import Bottle from './Bottle';
 import { BottleData, BottleContainerProps } from '../ts/interfaces';
 import { settings } from '../ts/options';
 
-
 function BottleContainer({ bottles, selectedBottle, showBottleLabels, onBottleSelect }: BottleContainerProps) {
+    const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+
+    useEffect(() => {
+        const handleResize = () => setScreenWidth(window.innerWidth);
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     const bottleWidth = 100;
     const gap = 32;
     const marginBottom = 16;
-    const screenWidth = window.innerWidth;
     const numColumns = Math.floor(screenWidth / (bottleWidth + gap));
     const numRows = Math.ceil(settings.numBottles / numColumns);
     const bottlesPerRow = Math.floor(settings.numBottles / numRows);

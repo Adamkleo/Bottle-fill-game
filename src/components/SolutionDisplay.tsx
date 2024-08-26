@@ -1,8 +1,6 @@
 import './SolutionDisplay.css';
 
 
-
-
 function SolutionDisplay({ solution }: any) {
     console.log(solution)
     return (

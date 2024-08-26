@@ -11,11 +11,10 @@
   margin-bottom: 1rem;
 }
 
-
 .bottles-container {
   display: flex;
   flex-direction: column;
-  gap: 3rem; 
+  gap: 1rem; 
   align-items: center; 
   width: 100%; 
   padding: 4rem 0; 
@@ -31,12 +30,9 @@
   margin-bottom: 0;
 }
 
-
-
 .moving {
-  z-index: 10; /* Higher z-index for the moving bottle */
+  z-index: 10; 
 }
-
 
 .settings-logo {
   cursor: pointer;
@@ -65,4 +61,15 @@
 .restart-logo:active {
   transform: rotate(-90deg);
 }
+
+.seed-logo {
+  cursor: pointer;
+  height: 35px;
+  width: auto;
+  position: absolute; 
+  top: 23px; 
+  right: 75px; 
+  transition: transform 0.3s;
+}
+
 

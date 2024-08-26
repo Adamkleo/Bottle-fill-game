@@ -2,13 +2,13 @@
 
 - [x] Keyboard support
 - [x] Solver
-- [x] Speedrun Mode
+- [x] Speedrun Mode 
 
 
 
 ### Future:
 - [ ] **Feat**: Allow custom level creation
-- [ ] **Feat**: Better random level generation with seed
+- [ ] **Feat**: Level Seeds
 - [ ] **Feat**: Show steps taken when using the solver
 - [ ] **Style**: Better speedrun times display
 - [ ] **Style**: Add wavy bottle liquid
