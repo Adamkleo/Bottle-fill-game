@@ -1,3 +1,4 @@
+import { BottleData } from "./interfaces";
 
 
 
@@ -99,3 +100,37 @@ export function calculateNumArrayAvg(timeList: number[], indices?: [number, numb
     }
 }
 
+
+export const exportBottles = (bottles: BottleData[]): void => {
+    const data = JSON.stringify(bottles);
+    const blob = new Blob([data], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'bottles.json';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+export const importBottles = (
+    bottleSetter: (newBottles: BottleData[]) => void,
+    stateSetter: (newState: BottleData[][]) => void
+): void => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = (event) => {
+        const file = (event.target as HTMLInputElement).files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const data = reader.result as string;
+                const newBottles = JSON.parse(data);
+                bottleSetter(newBottles);
+                stateSetter([newBottles]);
+            };
+            reader.readAsText(file);
+        }
+    };
+    input.click();
+}

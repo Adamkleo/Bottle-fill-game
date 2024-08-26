@@ -8,7 +8,7 @@ import Timer from './components/Timer';
 import BottleContainer from './components/BottleContainer';
 import Button from './components/Button';
 
-import { getNRandomColors } from './ts/utils';
+import { getNRandomColors, exportBottles, importBottles } from './ts/utils';
 import { Solver } from './solver/Solver';
 import { settings, NON_EMPTY_BOTTLES, COLOR_PALETTES, MIN_BOTTLES, MAX_BOTTLES, MIN_BOTTLE_LENGTH, MAX_BOTTLE_LENGTH, MIN_EMPTY_BOTTLES, MAX_EMPTY_BOTTLES, COLOR_PALETTES_LENGTH } from './ts/options';
 import { KeyActions, handleKeyPress } from './ts/keyHandlers';
@@ -307,8 +307,6 @@ function App() {
 		},
 	];
 
-
-
 	const numberSettingItems = [
 		{ label: "Bottles", id: "numBottles", value: numBottles, min: MIN_BOTTLES(), max: MAX_BOTTLES },
 		{ label: "Bottle Size", id: "bottleLength", value: bottleLength, min: MIN_BOTTLE_LENGTH, max: MAX_BOTTLE_LENGTH },
@@ -340,10 +338,10 @@ function App() {
 		const value = event.target.value;
 		const regex = /^[0-9]*$/;
 		if (regex.test(value) && value.length <= 16) {
-		  setSeedInput(value);
-		  setSettingModified(true);
+			setSeedInput(value);
+			setSettingModified(true);
 		}
-	  }
+	}
 
 	return (
 		<>
@@ -392,6 +390,7 @@ function App() {
 						onChange={(event) => handleNumberSettingChange(settingItem.id, parseInt(event.target.value))}
 						min={settingItem.min}
 						max={settingItem.max}
+						disabled={showSpeedrunMode}
 					/>
 				))}
 				{checkboxSettingItems.map((settingItem, index) => (
@@ -413,10 +412,14 @@ function App() {
 						id="seed"
 						value={seedInput}
 						onChange={handleSeedChange}
+						disabled={showSpeedrunMode}
 					/>
-					<button className='confirm-button' onClick={() => setSeed(seedInput)}>Set</button>
+					<button className='confirm-button' onClick={() => setSeed(seedInput)} disabled={showSpeedrunMode}>Set</button>
 				</div>
-
+				<div className='import-export-container'>
+					<button className='confirm-button' onClick={() => exportBottles(bottles)} disabled={showSpeedrunMode}>Export</button>
+					<button className='confirm-button' onClick={() => importBottles(setBottles, setStates)} disabled={showSpeedrunMode}>Import</button>
+				</div>
 
 				<Toolbar>
 					<Button

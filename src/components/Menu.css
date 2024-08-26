@@ -76,5 +76,10 @@
   justify-content: center;
   margin-top: 5px;
   display: flex;
+}
+
+.import-export-container {
+  display: flex;
+  justify-content: center;
   margin-bottom: 10px;
 }
