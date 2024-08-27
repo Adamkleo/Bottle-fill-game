@@ -32,12 +32,13 @@ export type GameStatistics = {
 export interface BottleProps {
     startY: number;
     colors: string[];
-    onClick: () => void;
-    selected: boolean;
+    onClick?: () => void;
+    selected?: boolean;
     size: number;
     number?: number;
-    label: string;
+    label?: string;
     freeSpace: number;
+    scale?: number;
 }
 
 export type BottleData = {

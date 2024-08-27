@@ -4,14 +4,14 @@ import { BOTTLE_SCALE } from '../ts/options';
 import { BottleProps } from '../ts/interfaces';
 
 
-function Bottle({ startY, colors, onClick, selected, size, label }: BottleProps) {
+function Bottle({ startY, colors, onClick, selected, size, label, scale = BOTTLE_SCALE }: BottleProps) {
 
     // Starting point of the bottle whithin the SVG
     const startX = 25;
     const colorCellSize = 50;
 
     const bottleHeight = label === null ? (size * colorCellSize) + 50 : (size * colorCellSize) + 80;
-    const bottleSelectScale = BOTTLE_SCALE + 0.1;
+    const bottleSelectScale = scale + 0.1;
 
 
     function generateColorSegment(startY: number, index: number): ReactElement {
@@ -60,7 +60,7 @@ function Bottle({ startY, colors, onClick, selected, size, label }: BottleProps)
             height={bottleHeight} // Dynamically set the height
             viewBox={`0 0 100 ${bottleHeight}`} // Dynamically set the viewBox height
             onClick={onClick}
-            style={{ transform: `scale(${selected ? bottleSelectScale : BOTTLE_SCALE})` }}
+            style={{ transform: `scale(${selected ? bottleSelectScale : scale})` }}
         >
 
             {/* Render the color segments */}

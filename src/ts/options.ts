@@ -9,7 +9,9 @@ export const settings: Settings = {
   bottleLength: 4,
   maxBottleLength: 8,
   selectedPalette: 1,
-  seed: '0'
+  seed: '0',
+  animations: false,
+  labels: false
 };
 
 export const MIN_EMPTY_BOTTLES: number = 2;

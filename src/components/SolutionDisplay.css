@@ -1,8 +1,26 @@
-.game-solution-header {
+.solution-header {
     font-family: 'VT323', monospace;
     font-size: 1.5rem;
-    margin-bottom: 16px;
+    margin-bottom: 30px;
     letter-spacing: 4px;
     text-shadow: 3px 3px 0px rgba(231, 3, 247, 0.5);
     text-transform: uppercase;
+}
+
+.solution-step {
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
+    margin-bottom: 10px;
+    height: 120px; 
+    padding: 5px 0; 
+}
+
+.arrow {
+    width: 25px;
+    height: 25px;
+    margin: 0 10px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

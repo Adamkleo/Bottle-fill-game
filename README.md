@@ -8,7 +8,7 @@
 
 ### Future:
 - [ ] **Feat**: Allow custom level creation
-- [ ] **Feat**: Level Seeds
+- [ ] **Feat**: Generating level seeds
 - [ ] **Feat**: Show steps taken when using the solver
 - [ ] **Style**: Better speedrun times display
 - [ ] **Style**: Add wavy bottle liquid

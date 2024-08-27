@@ -7,15 +7,20 @@ import GameHistory from './components/GameHistory';
 import Timer from './components/Timer';
 import BottleContainer from './components/BottleContainer';
 import Button from './components/Button';
+import SettingItem from './components/SettingItem';
+import SolutionDisplay from './components/SolutionDisplay';
 
-import { getNRandomColors, exportBottles, importBottles } from './ts/utils';
+import { settings, NON_EMPTY_BOTTLES,
+		COLOR_PALETTES, MIN_BOTTLES, 
+		MAX_BOTTLES, MIN_BOTTLE_LENGTH,
+		MAX_BOTTLE_LENGTH, MIN_EMPTY_BOTTLES,
+	   	MAX_EMPTY_BOTTLES, COLOR_PALETTES_LENGTH } from './ts/options';
 import { Solver } from './solver/Solver';
-import { settings, NON_EMPTY_BOTTLES, COLOR_PALETTES, MIN_BOTTLES, MAX_BOTTLES, MIN_BOTTLE_LENGTH, MAX_BOTTLE_LENGTH, MIN_EMPTY_BOTTLES, MAX_EMPTY_BOTTLES, COLOR_PALETTES_LENGTH } from './ts/options';
+import { getNRandomColors, exportBottles, importBottles } from './ts/utils';
 import { KeyActions, handleKeyPress } from './ts/keyHandlers';
 import { GameStatistics, BottleData } from './ts/interfaces';
 
 import { isWin, makeMove, generateEmptyState, generateRandomState } from './ts/gameLogic';
-import SettingItem from './components/SettingItem';
 import { useSettings } from './context/SettingsContext';
 
 
@@ -55,7 +60,7 @@ function App() {
 	const [gameHistory, setGameHistory] = useState<GameStatistics[]>([]);
 	const [showGameHistory, setShowGameHistory] = useState<boolean>(false);
 	const [displaySolution, setDisplaySolution] = useState<boolean>(false);
-	const [, setSolutionSteps] = useState<BottleData[][]>([]);
+	const [solution, setSolutionSteps] = useState<BottleData[][]>([]);
 
 	const [seedInput, setSeedInput] = useState<string>(seed);
 	const [settingModified, setSettingModified] = useState<boolean>(false);
@@ -88,7 +93,7 @@ function App() {
 	};
 
 	function debug() {
-		console.log(seed)
+		resetGame();
 	}
 
 
@@ -375,10 +380,6 @@ function App() {
 			)}
 
 
-
-
-
-
 			<Menu isOpen={isMenuOpen} onClose={handleCloseMenu}>
 				{numberSettingItems.map((settingItem, index) => (
 					<SettingItem
@@ -454,8 +455,7 @@ function App() {
 			/>
 
 			{showSolver && displaySolution && (
-				// <SolutionDisplay solution={solution} />
-				<div></div>
+				<SolutionDisplay solution={solution} />
 			)}
 
 			{showSpeedrunMode && showGameHistory && (
