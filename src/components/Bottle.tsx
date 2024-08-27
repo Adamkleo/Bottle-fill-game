@@ -1,5 +1,5 @@
 import { ReactElement } from 'react';
-import './Bottle.css';
+import '../style/Bottle.css';
 import { BOTTLE_SCALE } from '../ts/options';
 import { BottleProps } from '../ts/interfaces';
 

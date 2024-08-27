@@ -1,5 +1,5 @@
 import React from 'react';
-import './SolutionDisplay.css';
+import '../style/SolutionDisplay.css';
 import Bottle from './Bottle';
 import { BottleData } from '../ts/interfaces';
 import { settings } from '../ts/options';

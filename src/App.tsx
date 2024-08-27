@@ -9,12 +9,15 @@ import BottleContainer from './components/BottleContainer';
 import Button from './components/Button';
 import SettingItem from './components/SettingItem';
 import SolutionDisplay from './components/SolutionDisplay';
+import Creator from './components/Creator';
 
-import { settings, NON_EMPTY_BOTTLES,
-		COLOR_PALETTES, MIN_BOTTLES, 
-		MAX_BOTTLES, MIN_BOTTLE_LENGTH,
-		MAX_BOTTLE_LENGTH, MIN_EMPTY_BOTTLES,
-	   	MAX_EMPTY_BOTTLES, COLOR_PALETTES_LENGTH } from './ts/options';
+import {
+	settings, NON_EMPTY_BOTTLES,
+	COLOR_PALETTES, MIN_BOTTLES,
+	MAX_BOTTLES, MIN_BOTTLE_LENGTH,
+	MAX_BOTTLE_LENGTH, MIN_EMPTY_BOTTLES,
+	MAX_EMPTY_BOTTLES, COLOR_PALETTES_LENGTH
+} from './ts/options';
 import { Solver } from './solver/Solver';
 import { getNRandomColors, exportBottles, importBottles } from './ts/utils';
 import { KeyActions, handleKeyPress } from './ts/keyHandlers';
@@ -45,13 +48,22 @@ function App() {
 	} = useSettings();
 
 
+	enum Mode {
+		SpeedRun = 'SpeedRun',
+		Solver = 'Solver',
+		Creator = 'Creator',
+		None = 'None',
+	}
+
+
 	const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 	const [selectedBottle, setSelectedBottle] = useState<number | null>(null);
 	const [bottles, setBottles] = useState<BottleData[]>(generateEmptyState());
 	const [states, setStates] = useState<BottleData[][]>([bottles]);
 	const [buttonsDisabled, setButtonsDisabled] = useState<boolean>(false);
-	const [showSpeedrunMode, setShowSpeedrunMode] = useState<boolean>(false);
-	const [showSolver, setShowSolver] = useState<boolean>(false);
+
+	const [currentMode, setCurrentMode] = useState<Mode>(Mode.None);
+
 	const [speedrunActive, setSpeedrunActive] = useState<boolean>(false);
 	const [currentTime, setCurrentTime] = useState<number>(0);
 	const [undoButtonDisabled, setUndoButtonDisabled] = useState<boolean>(false);
@@ -117,14 +129,14 @@ function App() {
 	}, [bottles]);
 
 	useEffect(() => {
-		if (!showSpeedrunMode) setSpeedrunActive(false);
-		if (showSpeedrunMode) setBottles(generateEmptyState());
-	}, [showSpeedrunMode]);
+		if (currentMode != Mode.SpeedRun) setSpeedrunActive(false);
+		if (currentMode === Mode.SpeedRun) setBottles(generateEmptyState());
+	}, [currentMode]);
 
 
 	function handleWin(): void {
 		setBottles(bottles);
-		if (showSpeedrunMode) {
+		if (currentMode === Mode.SpeedRun) {
 			const latestGameStatistics: GameStatistics = { time: currentTime, moves: states.length - 1 };
 			setGameHistory([...gameHistory, latestGameStatistics]);
 			setSpeedrunActive(false);
@@ -348,6 +360,17 @@ function App() {
 		}
 	}
 
+
+	const switchMode = (mode: Mode) => {
+		if (currentMode === mode) {
+			setCurrentMode(Mode.None); // Toggle off if the same mode is selected
+		} else {
+			setCurrentMode(mode);
+		}
+	};
+
+
+
 	return (
 		<>
 			<img src="src/assets/settings-w.png" alt="settings" className="settings-logo" onClick={() => !buttonsDisabled && toggleMenu()} />
@@ -355,14 +378,14 @@ function App() {
 
 
 			{/* Conditionally render the toolbar based on the active mode */}
-			{(!showSpeedrunMode && !showSolver) && (
+			{currentMode === Mode.None && (
 				<Toolbar>
 					<Button label="Undo" onClick={undo} disabled={undoButtonDisabled} className="red" size="medium" />
 					<Button label="New Game" onClick={resetGame} disabled={buttonsDisabled} className="green" size="medium" />
 				</Toolbar>
 			)}
 
-			{showSpeedrunMode && (
+			{currentMode === Mode.SpeedRun && (
 				<>
 					<Timer isRunning={speedrunActive} mode="minute" onTimeUpdate={handleTimeUpdate} onClick={handleTimerClick} />
 					<Toolbar>
@@ -373,11 +396,16 @@ function App() {
 				</>
 			)}
 
-			{showSolver && (
+			{currentMode === Mode.Solver && (
 				<Toolbar>
 					<Button label="Solve" onClick={solveGame} disabled={buttonsDisabled} className="blue" size="medium" />
 				</Toolbar>
 			)}
+
+			{currentMode === Mode.Creator && (
+				<Creator />
+			)}
+
 
 
 			<Menu isOpen={isMenuOpen} onClose={handleCloseMenu}>
@@ -391,7 +419,7 @@ function App() {
 						onChange={(event) => handleNumberSettingChange(settingItem.id, parseInt(event.target.value))}
 						min={settingItem.min}
 						max={settingItem.max}
-						disabled={showSpeedrunMode}
+						disabled={currentMode === Mode.SpeedRun}
 					/>
 				))}
 				{checkboxSettingItems.map((settingItem, index) => (
@@ -413,52 +441,56 @@ function App() {
 						id="seed"
 						value={seedInput}
 						onChange={handleSeedChange}
-						disabled={showSpeedrunMode}
+						disabled={currentMode === Mode.SpeedRun}
 					/>
-					<button className='confirm-button' onClick={() => setSeed(seedInput)} disabled={showSpeedrunMode}>Set</button>
+					<button className='confirm-button' onClick={() => setSeed(seedInput)} disabled={currentMode === Mode.SpeedRun}>Set</button>
 				</div>
 				<div className='import-export-container'>
-					<button className='confirm-button' onClick={() => exportBottles(bottles)} disabled={showSpeedrunMode}>Export</button>
-					<button className='confirm-button' onClick={() => importBottles(setBottles, setStates)} disabled={showSpeedrunMode}>Import</button>
+					<button className='confirm-button' onClick={() => exportBottles(bottles)} disabled={currentMode === Mode.SpeedRun}>Export</button>
+					<button className='confirm-button' onClick={() => importBottles(setBottles, setStates)} disabled={currentMode === Mode.SpeedRun}>Import</button>
 				</div>
 
 				<Toolbar>
 					<Button
 						size='small'
 						label='SpeedRun'
-						onClick={() => {
-							setShowSolver(false)
-							setShowSpeedrunMode(!showSpeedrunMode)
-						}}
+						onClick={() => switchMode(Mode.SpeedRun)}
 						disabled={false}
-						className={showSpeedrunMode ? 'blue' : ''}
+						className={currentMode === Mode.SpeedRun ? 'blue' : ''}
 					/>
 					<Button
 						size='small'
 						label='Solver'
-						onClick={() => {
-							setShowSpeedrunMode(false)
-							setShowSolver(!showSolver)
-						}}
+						onClick={() => switchMode(Mode.Solver)}
 						disabled={false}
-						className={showSolver ? 'blue' : ''}
+						className={currentMode === Mode.Solver ? 'blue' : ''}
 					/>
+					<Button
+						size='small'
+						label='Creator'
+						onClick={() => switchMode(Mode.Creator)}
+						disabled={false}
+						className={currentMode === Mode.Creator ? 'blue' : ''}
+					/>
+
 				</Toolbar>
 			</Menu>
 
+			{currentMode != Mode.Creator && (
+				<BottleContainer
+					bottles={bottles}
+					selectedBottle={selectedBottle}
+					showBottleLabels={labels}
+					onBottleSelect={handleBottleSelect}
+				/>
+			)}
 
-			<BottleContainer
-				bottles={bottles}
-				selectedBottle={selectedBottle}
-				showBottleLabels={labels}
-				onBottleSelect={handleBottleSelect}
-			/>
 
-			{showSolver && displaySolution && (
+			{currentMode === Mode.Solver && displaySolution && (
 				<SolutionDisplay solution={solution} />
 			)}
 
-			{showSpeedrunMode && showGameHistory && (
+			{currentMode === Mode.SpeedRun && showGameHistory && (
 				<GameHistory gameList={gameHistory} />
 			)}
 

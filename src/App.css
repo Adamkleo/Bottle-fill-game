@@ -73,3 +73,12 @@
 }
 
 
+
+/* Prevent text selection and highlighting when double-clicking */
+* {
+  user-select: none; /* Disables text selection */
+  -webkit-user-select: none; /* For Safari */
+  -moz-user-select: none; /* For Firefox */
+  -ms-user-select: none; /* For Internet Explorer and Edge */
+}
+

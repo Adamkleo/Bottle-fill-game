@@ -1,4 +1,4 @@
-import './Button.css';
+import '../style/Button.css';
 import { ButtonProps } from '../ts/interfaces';
 
 

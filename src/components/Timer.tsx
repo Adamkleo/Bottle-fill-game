@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { formatTime } from '../ts/utils';
-import './Timer.css';
+import '../style/Timer.css';
 
 const MS = 10;
 

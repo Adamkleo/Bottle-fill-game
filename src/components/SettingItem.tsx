@@ -1,4 +1,4 @@
-import './SettingItem.css';
+import '../style/SettingItem.css';
 import { SettingItemProps } from '../ts/interfaces';
 
 function SettingItem({ label, id, value, onChange, min, max, type, disabled }: SettingItemProps) {

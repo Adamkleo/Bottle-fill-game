@@ -1,6 +1,6 @@
 import { formatTime } from "../ts/utils";
 import { GameHistoryProps, GameStatistics } from "../ts/interfaces";
-import './GameHistory.css';
+import '../style/GameHistory.css';
 
 
 function GameHistory({ gameList }: GameHistoryProps) {

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import './Menu.css'
+import '../style/Menu.css'
 
 interface MenuProps {
   children: React.ReactNode;
