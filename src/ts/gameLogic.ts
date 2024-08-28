@@ -1,7 +1,6 @@
 import { BottleData } from "./interfaces";
-import { settings, NON_EMPTY_BOTTLES, BOTTLE_KEY_BINDS } from "./options";
-import { allEqual } from "./utils";
-import { getRandomElements } from "./utils";
+import { settings, NON_EMPTY_BOTTLES, BOTTLE_KEY_BINDS, COLOR_PALETTES } from "./options";
+import { getRandomElements, getNRandomColors, allEqual } from "./utils";
 
 export function isWin(bottles: BottleData[]): boolean {
 
@@ -89,7 +88,8 @@ export function generateEmptyState(): BottleData[] {
     return bottles
 }
 
-export function generateRandomState(palette: { [key: string]: number; }): BottleData[] {
+export function generateRandomState(): BottleData[] {
+    const palette = getNRandomColors(COLOR_PALETTES[settings.selectedPalette], NON_EMPTY_BOTTLES());
     const bottles = [];
     for (let i = 0; i < settings.numBottles; i++) {
         if (i < NON_EMPTY_BOTTLES()) {
@@ -98,7 +98,7 @@ export function generateRandomState(palette: { [key: string]: number; }): Bottle
             bottles.push({ id: i, colors: [], freeSpace: settings.bottleLength, label: BOTTLE_KEY_BINDS[i] });
         }
     }
-    return isWin(bottles) ? generateRandomState(palette) : bottles;
+    return isWin(bottles) ? generateRandomState() : bottles;
 }
 
 

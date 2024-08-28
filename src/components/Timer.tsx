@@ -1,17 +1,11 @@
 import { useState, useEffect } from 'react';
 import { formatTime } from '../ts/utils';
 import '../style/Timer.css';
+import { TimerProps } from '../ts/interfaces';
 
 const MS = 10;
 
-interface TimerProps {
-    isRunning: boolean;
-    mode: 'hour' | 'minute' | 'second';
-    onTimeUpdate?: (time: number) => void;
-    onClick?: () => void;
-}
-
-function Timer({isRunning, mode, onTimeUpdate, onClick}: TimerProps) {
+function Timer({isRunning, mode, onTimeUpdate}: TimerProps) {
     const [time, setTime] = useState(0);
 
     useEffect(() => {
@@ -38,7 +32,7 @@ function Timer({isRunning, mode, onTimeUpdate, onClick}: TimerProps) {
 
     return (
         <div>
-            <span onClick={onClick} className="timer">{formatTime(time, mode)}</span>
+            <span className="timer">{formatTime(time, mode)}</span>
         </div>
     );
 }

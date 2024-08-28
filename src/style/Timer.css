@@ -11,7 +11,7 @@
     letter-spacing: 4px;
     text-shadow: 3px 3px 0px rgba(231, 3, 247, 0.5); 
     text-transform: uppercase; 
-    cursor: pointer;
+    cursor: default;
 }
 
 

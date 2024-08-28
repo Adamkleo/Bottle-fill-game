@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import BottleContainer from './BottleContainer';
-import ColorPalette from './ColorPalette';
+import BottleContainer from '../components/BottleContainer';
+import ColorPalette from '../components/ColorPalette';
 import { BottleData } from '../ts/interfaces';
 import { COLOR_PALETTES, settings } from '../ts/options';
 import { generateEmptyState } from '../ts/gameLogic';
 import '../style/Creator.css';
-import Button from './Button';
+import Button from '../components/Button';
 import { exportBottles } from '../ts/utils';
 
 const Creator = () => {

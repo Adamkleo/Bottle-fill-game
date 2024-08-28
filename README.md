@@ -3,11 +3,10 @@
 - [x] Keyboard support
 - [x] Solver
 - [x] Speedrun Mode 
-
+- [x] Level creator
 
 
 ### Future:
-- [ ] **Feat**: Allow custom level creation
 - [ ] **Feat**: Generating level seeds
 - [ ] **Style**: Better speedrun times display
 - [ ] **Style**: Add wavy bottle liquid

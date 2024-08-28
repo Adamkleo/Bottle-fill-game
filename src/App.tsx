@@ -8,18 +8,17 @@ import Timer from './components/Timer';
 import BottleContainer from './components/BottleContainer';
 import Button from './components/Button';
 import SettingItem from './components/SettingItem';
-import SolutionDisplay from './components/SolutionDisplay';
-import Creator from './components/Creator';
+import Creator from './modes/Creator';
+import Solver from './modes/Solver';
 
 import {
-	settings, NON_EMPTY_BOTTLES,
-	COLOR_PALETTES, MIN_BOTTLES,
+	settings, MIN_BOTTLES,
 	MAX_BOTTLES, MIN_BOTTLE_LENGTH,
 	MAX_BOTTLE_LENGTH, MIN_EMPTY_BOTTLES,
 	MAX_EMPTY_BOTTLES, COLOR_PALETTES_LENGTH
 } from './ts/options';
-import { Solver } from './solver/Solver';
-import { getNRandomColors, exportBottles, importBottles } from './ts/utils';
+
+import { exportBottles, importBottles } from './ts/utils';
 import { KeyActions, handleKeyPress } from './ts/keyHandlers';
 import { GameStatistics, BottleData } from './ts/interfaces';
 
@@ -70,14 +69,10 @@ function App() {
 	const [currentGame, setCurrentGame] = useState<BottleData[]>(generateEmptyState());
 
 	const [gameHistory, setGameHistory] = useState<GameStatistics[]>([]);
-	const [showGameHistory, setShowGameHistory] = useState<boolean>(false);
-	const [displaySolution, setDisplaySolution] = useState<boolean>(false);
-	const [solution, setSolutionSteps] = useState<BottleData[][]>([]);
 
 	const [seedInput, setSeedInput] = useState<string>(seed);
 	const [settingModified, setSettingModified] = useState<boolean>(false);
 
-	let solver = new Solver();
 
 	const actions: KeyActions = {
 		// Game controls
@@ -137,7 +132,7 @@ function App() {
 	function handleWin(): void {
 		setBottles(bottles);
 		if (currentMode === Mode.SpeedRun) {
-			const latestGameStatistics: GameStatistics = { time: currentTime, moves: states.length - 1 };
+			const latestGameStatistics: GameStatistics = { time: currentTime, moves: states.length - 1, bottles: currentGame };
 			setGameHistory([...gameHistory, latestGameStatistics]);
 			setSpeedrunActive(false);
 		}
@@ -169,19 +164,6 @@ function App() {
 	}
 
 
-	function animateStates(states: BottleData[][]) {
-		if (!states) return;
-		let i = 0;
-		let interval = setInterval(() => {
-			if (i < states.length) {
-				setBottles(states[i]);
-				i++;
-			} else {
-				clearInterval(interval);
-				setButtonsDisabled(false);
-			}
-		}, 100);
-	}
 
 
 
@@ -237,32 +219,14 @@ function App() {
 
 
 	function resetGame(): void {
-		const newPalette = getNRandomColors(COLOR_PALETTES[settings.selectedPalette], NON_EMPTY_BOTTLES());
-		const newBottles = generateRandomState(newPalette);
+		const newBottles = generateRandomState();
 		setBottles(newBottles);
 		setCurrentGame(newBottles);
 		setStates([newBottles]);
 		setSelectedBottle(null);
 		setButtonsDisabled(false);
-		setDisplaySolution(false);
-		setSolutionSteps([]);
 	}
 
-	function solveGame(): void {
-		setButtonsDisabled(true);
-		let solve: BottleData[][] | null = solver.solve(bottles, 'bfs');
-		if (solve) {
-			setButtonsDisabled(true);
-			animateStates(solve);
-			setSolutionSteps(solve);
-			setDisplaySolution(true);
-			setCurrentGame([]);
-		}
-		else {
-			alert("No solution found");
-			setButtonsDisabled(false);
-		}
-	}
 
 	const toggleMenu = (): void => {
 		setIsMenuOpen(!isMenuOpen);
@@ -294,9 +258,7 @@ function App() {
 
 	}
 
-	const handleTimerClick = (): void => {
-		setShowGameHistory(!showGameHistory);
-	}
+
 
 	const handleTimeUpdate = (time: number): void => {
 		setCurrentTime(time);
@@ -370,24 +332,15 @@ function App() {
 	};
 
 
-
 	return (
 		<>
 			<img src="src/assets/settings-w.png" alt="settings" className="settings-logo" onClick={() => !buttonsDisabled && toggleMenu()} />
 			<img src="src/assets/restart-w.png" className='restart-logo' alt="restart" onClick={() => !buttonsDisabled && handleRestart()} />
 
-
 			{/* Conditionally render the toolbar based on the active mode */}
-			{currentMode === Mode.None && (
-				<Toolbar>
-					<Button label="Undo" onClick={undo} disabled={undoButtonDisabled} className="red" size="medium" />
-					<Button label="New Game" onClick={resetGame} disabled={buttonsDisabled} className="green" size="medium" />
-				</Toolbar>
-			)}
-
 			{currentMode === Mode.SpeedRun && (
 				<>
-					<Timer isRunning={speedrunActive} mode="minute" onTimeUpdate={handleTimeUpdate} onClick={handleTimerClick} />
+					<Timer isRunning={speedrunActive} mode="minute" onTimeUpdate={handleTimeUpdate} />
 					<Toolbar>
 						<Button label="End" onClick={endSpeedrun} disabled={!speedrunActive} className="red" size="medium" />
 						<Button label="Undo" onClick={undo} disabled={undoButtonDisabled} className="red" size="medium" />
@@ -397,16 +350,40 @@ function App() {
 			)}
 
 			{currentMode === Mode.Solver && (
-				<Toolbar>
-					<Button label="Solve" onClick={solveGame} disabled={buttonsDisabled} className="blue" size="medium" />
-				</Toolbar>
+				<Solver
+					bottles={bottles}
+					setBottles={setBottles}
+					disabled={buttonsDisabled}
+				/>
 			)}
 
 			{currentMode === Mode.Creator && (
 				<Creator />
 			)}
 
+			{currentMode === Mode.None && (
+				<>
+					<h1 className='header'>Water Sort Plus</h1>
+					<Toolbar>
+						<Button label="Undo" onClick={undo} disabled={undoButtonDisabled} className="red" size="medium" />
+						<Button label="New Game" onClick={resetGame} disabled={buttonsDisabled} className="green" size="medium" />
+					</Toolbar>
+				</>
+			)}
 
+			{(currentMode === Mode.SpeedRun || currentMode === Mode.None) && (
+				<>
+					<BottleContainer
+						bottles={bottles}
+						selectedBottle={selectedBottle}
+						showBottleLabels={labels}
+						onBottleSelect={handleBottleSelect}
+					/>
+					{currentMode === Mode.SpeedRun && (
+						<GameHistory gameList={gameHistory} />
+					)}
+				</>
+			)}
 
 			<Menu isOpen={isMenuOpen} onClose={handleCloseMenu}>
 				{numberSettingItems.map((settingItem, index) => (
@@ -472,30 +449,13 @@ function App() {
 						disabled={false}
 						className={currentMode === Mode.Creator ? 'blue' : ''}
 					/>
-
 				</Toolbar>
 			</Menu>
 
-			{currentMode != Mode.Creator && (
-				<BottleContainer
-					bottles={bottles}
-					selectedBottle={selectedBottle}
-					showBottleLabels={labels}
-					onBottleSelect={handleBottleSelect}
-				/>
-			)}
-
-
-			{currentMode === Mode.Solver && displaySolution && (
-				<SolutionDisplay solution={solution} />
-			)}
-
-			{currentMode === Mode.SpeedRun && showGameHistory && (
-				<GameHistory gameList={gameHistory} />
-			)}
 
 		</>
 	);
+
 }
 
 export default App;

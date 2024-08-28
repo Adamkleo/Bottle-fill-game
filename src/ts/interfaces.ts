@@ -27,6 +27,7 @@ export interface GameHistoryProps {
 export type GameStatistics = {
     time: number;
     moves: number;
+    bottles: BottleData[];
 };
 
 export interface BottleProps {
@@ -64,7 +65,7 @@ export interface BottleContainerProps {
     bottles: BottleData[];
     selectedBottle: number | null;
     showBottleLabels: boolean;
-    onBottleSelect: (bottleId: number) => void;
+    onBottleSelect: (bottleId: number) => void | undefined;
 }
 
 export interface ButtonProps {
@@ -73,4 +74,11 @@ export interface ButtonProps {
     size: string,
     onClick: () => void;
     disabled: boolean;
+}
+
+
+export interface TimerProps {
+    isRunning: boolean;
+    mode: 'hour' | 'minute' | 'second';
+    onTimeUpdate?: (time: number) => void;
 }

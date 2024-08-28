@@ -32,3 +32,8 @@
 .game-history-container {
     margin-bottom: 100px;
 }
+
+
+.clickable {
+    cursor: pointer;
+}
