@@ -1,6 +1,6 @@
 # Bottle Fill Game
 
-A simple game project built with Vite.
+A clone of the Water-Sort puzzle game built using React & Typescript. Adds extra features such as a built-in solver, level creator, speedrun mode, and customization options.
 
 ![Bottle Fill Game Screenshot](./assets/screenshot.png)
 
