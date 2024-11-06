@@ -19,9 +19,12 @@ Follow these instructions to get a copy of the project up and running on your lo
 
 ### Installation
 
+```bash
 git clone https://github.com/yourusername/Bottle-fill-game.git
 cd Bottle-fill-game/src
 npm install
 npm run dev
 
+
 This will launch the Vite development server, and you should see the game running at the provided local URL (typically http://localhost:3000).
+
