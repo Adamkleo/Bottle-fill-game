@@ -1,4 +1,4 @@
-# Bottle Fill Game
+# Water Sort Plus
 
 A clone of the Water-Sort puzzle game built using React & Typescript. Adds extra features such as a built-in solver, level creator, speedrun mode, and customization options.
 
